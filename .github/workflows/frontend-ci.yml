@@ -38,7 +38,9 @@ jobs:
 
       - name: Run Frontend Tests
         working-directory: frontend
-        run: CI=true pnpm test
+        env:
+          CI: true
+        run: pnpm test
 
       - name: Build Frontend
         working-directory: frontend
