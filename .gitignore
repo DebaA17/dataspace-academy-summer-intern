@@ -19,3 +19,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+
+db.sqlite3
+__init__.py
