@@ -6,9 +6,14 @@ import PredictionForm from "./pages/PredictionForm";
 import Result from "./pages/Result";
 import "./App.css";
 
+const routerFutureFlags = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
+
 function App() {
   return (
-    <Router>
+    <Router future={routerFutureFlags}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

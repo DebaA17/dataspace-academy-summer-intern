@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 function Result() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData } = location.state || {};
+  const { formData, predictionResult } = location.state || {};
 
   // Cluster descriptions
   const clusterInfo = {
@@ -71,21 +71,17 @@ function Result() {
 
   const clusterNumber = getMockCluster(formData);
   const cluster = clusterInfo[clusterNumber];
+  const backendResult = predictionResult || null;
 
   // If someone visits /result directly without form data
   if (!formData) {
     return (
-      <div className="page-wrapper text-center mt-5">
-        <h4 style={{ color: "#555" }}>
+      <div className="page-wrapper result-empty-state text-center mt-5">
+        <h4 className="result-empty-state__title">
           No data found. Please fill the form first.
         </h4>
         <button
-          className="btn mt-3"
-          style={{
-            backgroundColor: "#1a73e8",
-            color: "white",
-            borderRadius: "8px",
-          }}
+          className="btn mt-3 primary-action-button"
           onClick={() => navigate("/predict")}
         >
           Go to Form
@@ -95,68 +91,54 @@ function Result() {
   }
 
   return (
-    <div className="page-wrapper">
-      <div className="container" style={{ maxWidth: "780px" }}>
+    <div className="page-wrapper page-wrapper--subtle">
+      <div className="container result-shell" style={{ maxWidth: "780px" }}>
         {/* Header */}
-        <div className="text-center mb-4">
-          <h2 style={{ fontWeight: "800", color: "#1a1a2e" }}>
+        <div className="text-center mb-4 result-header">
+          <h2 className="result-header__title">
             Prediction Result
           </h2>
-          <p style={{ color: "#555" }}>Based on the customer data provided</p>
+          <p className="result-header__copy">Based on the customer data provided</p>
         </div>
 
         {/* Main Result Card */}
         <div
-          className="rounded-4 p-5 mb-4 text-center shadow-sm"
+          className="rounded-4 p-5 mb-4 text-center shadow-sm result-hero-card"
           style={{
             backgroundColor: cluster.color,
             border: `2px solid ${cluster.accent}`,
           }}
         >
-          <div style={{ fontSize: "4rem" }}>{cluster.emoji}</div>
-          <h6
-            className="mt-2"
-            style={{
-              color: cluster.accent,
-              fontWeight: "600",
-              fontSize: "1rem",
-            }}
-          >
+          <div className="result-hero-card__emoji">{cluster.emoji}</div>
+          <h6 className="mt-2 result-hero-card__label">
             Customer is in
           </h6>
-          <h1
-            style={{ fontWeight: "900", color: "#1a1a2e", fontSize: "2.5rem" }}
-          >
-            Cluster {clusterNumber}
+          <h1 className="result-hero-card__cluster">
+            {backendResult ? `Cluster ${backendResult.predicted_cluster}` : `Cluster ${clusterNumber}`}
           </h1>
-          <h4
-            className="mt-1"
-            style={{ color: cluster.accent, fontWeight: "700" }}
-          >
-            {cluster.title}
+          <h4 className="mt-1 result-hero-card__title">
+            {backendResult ? backendResult.cluster_description : cluster.title}
           </h4>
-          <p
-            className="mt-3 mx-auto"
-            style={{ color: "#444", maxWidth: "500px", lineHeight: "1.7" }}
-          >
-            {cluster.description}
+          <p className="mt-3 mx-auto result-hero-card__copy">
+            {backendResult ? backendResult.message : cluster.description}
           </p>
+          {backendResult ? (
+            <p className="mt-3 mb-0 result-hero-card__confidence">
+              Confidence: {(backendResult.confidence_score * 100).toFixed(0)}%
+            </p>
+          ) : null}
         </div>
 
         {/* Tips Card */}
-        <div
-          className="rounded-4 p-4 mb-4 shadow-sm"
-          style={{ backgroundColor: "#ffffff" }}
-        >
-          <h5 style={{ fontWeight: "700", color: "#1a1a2e" }}>
+        <div className="rounded-4 p-4 mb-4 shadow-sm result-panel">
+          <h5 className="result-panel__title">
             📌 Recommended Marketing Actions
           </h5>
-          <ul className="mt-3" style={{ paddingLeft: "20px" }}>
+          <ul className="mt-3 result-panel__list">
             {cluster.tips.map((tip, index) => (
               <li
                 key={index}
-                className="mb-2"
-                style={{ color: "#555", fontSize: "0.95rem" }}
+                className="mb-2 result-panel__item"
               >
                 {tip}
               </li>
@@ -165,11 +147,8 @@ function Result() {
         </div>
 
         {/* Summary Card */}
-        <div
-          className="rounded-4 p-4 mb-4 shadow-sm"
-          style={{ backgroundColor: "#ffffff" }}
-        >
-          <h5 style={{ fontWeight: "700", color: "#1a1a2e" }}>
+        <div className="rounded-4 p-4 mb-4 shadow-sm result-panel">
+          <h5 className="result-panel__title">
             📋 Customer Summary
           </h5>
           <div className="row mt-3 g-3">
@@ -197,25 +176,12 @@ function Result() {
             ].map((item) => (
               <div className="col-6 col-md-3" key={item.label}>
                 <div
-                  className="p-3 rounded-3 text-center"
-                  style={{ backgroundColor: "#f8f9fa" }}
+                  className="p-3 rounded-3 text-center result-summary-card"
                 >
-                  <div
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      fontWeight: "600",
-                    }}
-                  >
+                  <div className="result-summary-card__label">
                     {item.label}
                   </div>
-                  <div
-                    style={{
-                      fontSize: "1rem",
-                      fontWeight: "700",
-                      color: "#1a1a2e",
-                    }}
-                  >
+                  <div className="result-summary-card__value">
                     {item.value}
                   </div>
                 </div>
@@ -225,29 +191,15 @@ function Result() {
         </div>
 
         {/* Action Buttons */}
-        <div className="d-flex gap-3 justify-content-center mb-5 flex-wrap">
+        <div className="d-flex gap-3 justify-content-center mb-5 flex-wrap result-actions">
           <button
-            className="btn px-4 py-2"
-            style={{
-              backgroundColor: "#1a73e8",
-              color: "white",
-              fontWeight: "600",
-              borderRadius: "8px",
-              border: "none",
-            }}
+            className="btn px-4 py-2 primary-action-button"
             onClick={() => navigate("/predict")}
           >
             🔄 Predict Another Customer
           </button>
           <button
-            className="btn px-4 py-2"
-            style={{
-              backgroundColor: "#ffffff",
-              color: "#1a73e8",
-              fontWeight: "600",
-              borderRadius: "8px",
-              border: "2px solid #1a73e8",
-            }}
+            className="btn px-4 py-2 secondary-action-button"
             onClick={() => navigate("/")}
           >
             🏠 Back to Home
