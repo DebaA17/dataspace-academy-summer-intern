@@ -5,54 +5,49 @@ import pandas as pd
 print("🚀 Predictor Started")
 
 # =========================
-# 1. Load model
+# 1. Paths
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model_path = os.path.join(BASE_DIR, "models/best_model.pkl")
+model_path = os.path.join(BASE_DIR, "models/customer_cluster_model.pkl")
+feature_path = os.path.join(BASE_DIR, "models/features.pkl")
 
+# =========================
+# 2. Load model + features
+# =========================
 model = joblib.load(model_path)
+features = joblib.load(feature_path)
 
-print("✅ Model loaded successfully")
+print("✅ Model loaded")
 
 # =========================
-# 2. Load sample input data (for testing)
+# 3. Load data (test sample)
 # =========================
-# 👉 Replace this with real input later
-sample_data_path = os.path.join(BASE_DIR, "data/raw/customer_data.csv")
+data_path = os.path.join(BASE_DIR, "data/raw/customer_data.csv")
+df = pd.read_csv(data_path, sep="\t")
 
-df = pd.read_csv(sample_data_path, sep="\t")
-
-# Drop same columns used in training
+# =========================
+# 4. Preprocess (same as training)
+# =========================
 if "Dt_Customer" in df.columns:
     df = df.drop("Dt_Customer", axis=1)
 
-# Remove target column if exists
 if "Response" in df.columns:
     df = df.drop("Response", axis=1)
 
-# Convert categorical columns (same as training)
 df = pd.get_dummies(df)
 
-# =========================
-# 3. Align columns with training model
-# =========================
-# IMPORTANT: match feature columns
-model_features = model.feature_names_in_
-
-df = df.reindex(columns=model_features, fill_value=0)
+# Align features
+df = df.reindex(columns=features, fill_value=0)
 
 # =========================
-# 4. Make prediction
+# 5. Predict
 # =========================
 predictions = model.predict(df)
 
-# =========================
-# 5. Output result
-# =========================
 df["prediction"] = predictions
 
 print("\n🎯 Sample Predictions:")
 print(df[["prediction"]].head())
 
-print("\n✅ Prediction completed")
+print("\n✅ Prediction Completed")
