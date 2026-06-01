@@ -10,38 +10,42 @@ from sklearn.metrics import accuracy_score, classification_report
 print("🚀 ML Training Started")
 
 # =========================
-# 1. Load dataset
+# Load Dataset
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-file_path = os.path.join(
+data_path = os.path.join(
     BASE_DIR,
-    "data/raw/customer_data.csv"
+    "data",
+    "processed",
+    "featured_data_standard.csv"
 )
 
-df = pd.read_csv(file_path, sep="\t")
+df = pd.read_csv(data_path)
 
 print("📊 Data Loaded:", df.shape)
 
 # =========================
-# 2. Cleaning
+# Data Cleaning
 # =========================
 if "Dt_Customer" in df.columns:
-    df = df.drop("Dt_Customer", axis=1)
+    df = df.drop(columns=["Dt_Customer"])
 
 # =========================
-# 3. Features & Target
+# Features & Target
 # =========================
-X = df.drop("Response", axis=1)
-y = df["Response"]
+TARGET_COLUMN = "Response"
 
-# Encode categorical data
+X = df.drop(columns=[TARGET_COLUMN])
+y = df[TARGET_COLUMN]
+
+# Encode categorical columns if any
 X = pd.get_dummies(X)
 
-print("🧠 After encoding:", X.shape)
+print("🧠 Features Shape:", X.shape)
 
 # =========================
-# 4. Train-test split
+# Train-Test Split
 # =========================
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -52,7 +56,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # =========================
-# 5. Random Forest
+# Random Forest
 # =========================
 print("\n🌲 Training Random Forest...")
 
@@ -63,15 +67,15 @@ rf_model = RandomForestClassifier(
 )
 
 rf_model.fit(X_train, y_train)
-rf_pred = rf_model.predict(X_test)
 
-rf_acc = accuracy_score(y_test, rf_pred)
+rf_predictions = rf_model.predict(X_test)
+rf_accuracy = accuracy_score(y_test, rf_predictions)
 
-print("🌲 RF Accuracy:", rf_acc)
-print(classification_report(y_test, rf_pred))
+print(f"🌲 RF Accuracy: {rf_accuracy:.4f}")
+print(classification_report(y_test, rf_predictions))
 
 # =========================
-# 6. XGBoost
+# XGBoost
 # =========================
 print("\n⚡ Training XGBoost...")
 
@@ -84,32 +88,45 @@ xgb_model = XGBClassifier(
 )
 
 xgb_model.fit(X_train, y_train)
-xgb_pred = xgb_model.predict(X_test)
 
-xgb_acc = accuracy_score(y_test, xgb_pred)
+xgb_predictions = xgb_model.predict(X_test)
+xgb_accuracy = accuracy_score(y_test, xgb_predictions)
 
-print("⚡ XGB Accuracy:", xgb_acc)
-print(classification_report(y_test, xgb_pred))
-
-# =========================
-# 7. Best Model
-# =========================
-best_model = rf_model if rf_acc > xgb_acc else xgb_model
-best_name = "RandomForest" if rf_acc > xgb_acc else "XGBoost"
-
-print(f"\n🏆 Best Model: {best_name}")
+print(f"⚡ XGB Accuracy: {xgb_accuracy:.4f}")
+print(classification_report(y_test, xgb_predictions))
 
 # =========================
-# 8. Save model + features
+# Select Best Model
 # =========================
-os.makedirs(os.path.join(BASE_DIR, "models"), exist_ok=True)
+if rf_accuracy > xgb_accuracy:
+    best_model = rf_model
+    best_model_name = "Random Forest"
+else:
+    best_model = xgb_model
+    best_model_name = "XGBoost"
 
-model_path = os.path.join(BASE_DIR, "models/customer_cluster_model.pkl")
-feature_path = os.path.join(BASE_DIR, "models/features.pkl")
+print(f"\n🏆 Best Model: {best_model_name}")
+
+# =========================
+# Save Model & Features
+# =========================
+models_dir = os.path.join(BASE_DIR, "models")
+os.makedirs(models_dir, exist_ok=True)
+
+model_path = os.path.join(
+    models_dir,
+    "customer_cluster_model.pkl"
+)
+
+features_path = os.path.join(
+    models_dir,
+    "features.pkl"
+)
 
 joblib.dump(best_model, model_path)
-joblib.dump(X.columns, feature_path)
+joblib.dump(X.columns.tolist(), features_path)
 
-print("💾 Model saved at:", model_path)
-print("📌 Features saved at:", feature_path)
-print("✅ Training Completed")
+print("💾 Model saved:", model_path)
+print("📌 Features saved:", features_path)
+
+print("\n✅ Training Completed Successfully")
