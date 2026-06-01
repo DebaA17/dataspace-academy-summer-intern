@@ -1,0 +1,10 @@
+{
+  "name": "dataspace-customer-categorization",
+  "private": true,
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "start": "pnpm --dir frontend start",
+    "start:frontend": "pnpm --dir frontend start",
+    "start:backend": "./.venv/bin/python backend/manage.py runserver 127.0.0.1:8000"
+  }
+}
