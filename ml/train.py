@@ -1,8 +1,11 @@
-import os
+from __future__ import annotations
+
+from pathlib import Path
+
 import joblib
 import pandas as pd
-
-from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
@@ -10,42 +13,38 @@ from sklearn.metrics import accuracy_score, classification_report
 print("🚀 ML Training Started")
 
 # =========================
-# Load Dataset
+# 1. Load dataset
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-data_path = os.path.join(
+file_path = os.path.join(
     BASE_DIR,
-    "data",
-    "processed",
-    "featured_data_standard.csv"
+    "data/raw/customer_data.csv"
 )
 
-df = pd.read_csv(data_path)
+df = pd.read_csv(file_path, sep="\t")
 
 print("📊 Data Loaded:", df.shape)
 
 # =========================
-# Data Cleaning
+# 2. Cleaning
 # =========================
 if "Dt_Customer" in df.columns:
-    df = df.drop(columns=["Dt_Customer"])
+    df = df.drop("Dt_Customer", axis=1)
 
 # =========================
-# Features & Target
+# 3. Features & Target
 # =========================
-TARGET_COLUMN = "Response"
+X = df.drop("Response", axis=1)
+y = df["Response"]
 
-X = df.drop(columns=[TARGET_COLUMN])
-y = df[TARGET_COLUMN]
-
-# Encode categorical columns if any
+# Encode categorical data
 X = pd.get_dummies(X)
 
-print("🧠 Features Shape:", X.shape)
+print("🧠 After encoding:", X.shape)
 
 # =========================
-# Train-Test Split
+# 4. Train-test split
 # =========================
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -56,7 +55,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # =========================
-# Random Forest
+# 5. Random Forest
 # =========================
 print("\n🌲 Training Random Forest...")
 
@@ -67,15 +66,15 @@ rf_model = RandomForestClassifier(
 )
 
 rf_model.fit(X_train, y_train)
+rf_pred = rf_model.predict(X_test)
 
-rf_predictions = rf_model.predict(X_test)
-rf_accuracy = accuracy_score(y_test, rf_predictions)
+rf_acc = accuracy_score(y_test, rf_pred)
 
-print(f"🌲 RF Accuracy: {rf_accuracy:.4f}")
-print(classification_report(y_test, rf_predictions))
+print("🌲 RF Accuracy:", rf_acc)
+print(classification_report(y_test, rf_pred))
 
 # =========================
-# XGBoost
+# 6. XGBoost
 # =========================
 print("\n⚡ Training XGBoost...")
 
@@ -88,45 +87,32 @@ xgb_model = XGBClassifier(
 )
 
 xgb_model.fit(X_train, y_train)
+xgb_pred = xgb_model.predict(X_test)
 
-xgb_predictions = xgb_model.predict(X_test)
-xgb_accuracy = accuracy_score(y_test, xgb_predictions)
+xgb_acc = accuracy_score(y_test, xgb_pred)
 
-print(f"⚡ XGB Accuracy: {xgb_accuracy:.4f}")
-print(classification_report(y_test, xgb_predictions))
-
-# =========================
-# Select Best Model
-# =========================
-if rf_accuracy > xgb_accuracy:
-    best_model = rf_model
-    best_model_name = "Random Forest"
-else:
-    best_model = xgb_model
-    best_model_name = "XGBoost"
-
-print(f"\n🏆 Best Model: {best_model_name}")
+print("⚡ XGB Accuracy:", xgb_acc)
+print(classification_report(y_test, xgb_pred))
 
 # =========================
-# Save Model & Features
+# 7. Best Model
 # =========================
-models_dir = os.path.join(BASE_DIR, "models")
-os.makedirs(models_dir, exist_ok=True)
+best_model = rf_model if rf_acc > xgb_acc else xgb_model
+best_name = "RandomForest" if rf_acc > xgb_acc else "XGBoost"
 
-model_path = os.path.join(
-    models_dir,
-    "customer_cluster_model.pkl"
-)
+print(f"\n🏆 Best Model: {best_name}")
 
-features_path = os.path.join(
-    models_dir,
-    "features.pkl"
-)
+# =========================
+# 8. Save model + features
+# =========================
+os.makedirs(os.path.join(BASE_DIR, "models"), exist_ok=True)
+
+model_path = os.path.join(BASE_DIR, "models/customer_cluster_model.pkl")
+feature_path = os.path.join(BASE_DIR, "models/features.pkl")
 
 joblib.dump(best_model, model_path)
-joblib.dump(X.columns.tolist(), features_path)
+joblib.dump(X.columns, feature_path)
 
-print("💾 Model saved:", model_path)
-print("📌 Features saved:", features_path)
-
-print("\n✅ Training Completed Successfully")
+print("💾 Model saved at:", model_path)
+print("📌 Features saved at:", feature_path)
+print("✅ Training Completed")
