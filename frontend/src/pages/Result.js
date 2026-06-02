@@ -205,6 +205,21 @@ function Result() {
             🏠 Back to Home
           </button>
         </div>
+
+        {/* Footer Section */}
+        <footer className="container mt-5 pt-4 pb-4 border-top">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
+              <div className="brand-badge" style={{ width: "32px", height: "32px", borderRadius: "10px", fontSize: "0.7rem", boxShadow: "none" }}>
+                IQ
+              </div>
+              <span className="fw-bold text-primary" style={{ fontSize: "0.95rem" }}>CustomerIQ</span>
+            </div>
+            <div className="text-secondary small">
+              © {new Date().getFullYear()} CustomerIQ Platform. All rights reserved.
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

@@ -68,3 +68,25 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           docker build -t pr-validation-image .
+
+  update-labels:
+    name: Update Labels
+    needs: validate
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Add Passed Label
+        if: ${{ needs.validate.result == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "pipeline-validation-passed" --remove-label "pipeline-validation-failed"
+
+      - name: Add Failed Label
+        if: ${{ needs.validate.result != 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "pipeline-validation-failed" --remove-label "pipeline-validation-passed"
+
+

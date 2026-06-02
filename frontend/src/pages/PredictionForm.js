@@ -98,10 +98,10 @@ function PredictionForm() {
         {/* Header */}
         <div className="mb-4 form-header">
           <h2 className="form-header__title">
-            Customer Segmentation
+            AI-Powered Customer Segmentation
           </h2>
           <p className="form-header__copy">
-            Fill in the customer details below to predict their cluster.
+            Input demographic and behavioral customer profiles below. Our machine learning classifier will analyze the data to immediately predict their exact segment.
           </p>
           {error ? (
             <div className="alert alert-danger mt-3" role="alert">
@@ -364,6 +364,21 @@ function PredictionForm() {
             </button>
           </div>
         </form>
+
+        {/* Footer Section */}
+        <footer className="container mt-5 pt-4 pb-4 border-top">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
+              <div className="brand-badge" style={{ width: "32px", height: "32px", borderRadius: "10px", fontSize: "0.7rem", boxShadow: "none" }}>
+                IQ
+              </div>
+              <span className="fw-bold text-primary" style={{ fontSize: "0.95rem" }}>CustomerIQ</span>
+            </div>
+            <div className="text-secondary small">
+              © {new Date().getFullYear()} CustomerIQ Platform. All rights reserved.
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

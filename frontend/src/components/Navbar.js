@@ -12,10 +12,10 @@ function Navbar() {
         {/* Logo / Brand */}
         <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
           <div className="brand-badge">
-            CI
+            IQ
           </div>
           <span className="brand-title">
-            Customer Intelligence Platform
+            CustomerIQ
           </span>
         </Link>
 
