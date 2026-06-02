@@ -5,18 +5,12 @@ function Navbar() {
   const location = useLocation();
 
   return (
-    <nav
-      className="navbar navbar-expand-lg navbar-light app-navbar"
-    >
+    <nav className="navbar navbar-expand-lg navbar-light app-navbar">
       <div className="container">
         {/* Logo / Brand */}
         <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
-          <div className="brand-badge">
-            CI
-          </div>
-          <span className="brand-title">
-            Customer Intelligence Platform
-          </span>
+          <div className="brand-badge">CI</div>
+          <span className="brand-title">Customer Intelligence Platform</span>
         </Link>
 
         {/* Hamburger for mobile */}
