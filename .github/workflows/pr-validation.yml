@@ -65,5 +65,6 @@ jobs:
           pip-audit -r requirements.txt
 
       - name: Build Docker Image
+        if: matrix.os == 'ubuntu-latest'
         run: |
           docker build -t pr-validation-image .

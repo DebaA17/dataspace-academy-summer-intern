@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 function PredictionForm() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     age: "",
     education: "",
@@ -32,8 +34,48 @@ function PredictionForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Navigate to result page with form data
-    navigate("/result", { state: { formData } });
+    const payload = {
+      age: Number(formData.age),
+      income: Number(formData.income),
+      total_spending: Number(formData.totalSpending),
+      education: formData.education,
+      marital_status: formData.married === "1" ? "Married" : "Single",
+      num_web_purchases: Number(formData.numWebPurchases),
+      num_store_purchases: Number(formData.numStorePurchases),
+      num_catalog_purchases: Number(formData.numCatalogPurchases),
+      num_web_visits_month: Number(formData.numWebVisits),
+      recency: Number(formData.daysCustomer),
+      total_children: Number(formData.numChildren),
+    };
+
+    setLoading(true);
+    setError("");
+
+    fetch("/api/predict/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data?.detail || "Unable to get prediction from backend.");
+        }
+        navigate("/result", {
+          state: {
+            formData,
+            predictionResult: data,
+          },
+        });
+      })
+      .catch((submitError) => {
+        setError(submitError.message || "Prediction request failed.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const inputStyle = {
@@ -51,22 +93,27 @@ function PredictionForm() {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="container" style={{ maxWidth: "780px" }}>
+    <div className="page-wrapper page-wrapper--subtle">
+      <div className="container form-shell" style={{ maxWidth: "780px" }}>
         {/* Header */}
-        <div className="mb-4">
-          <h2 style={{ fontWeight: "800", color: "#1a1a2e" }}>
+        <div className="mb-4 form-header">
+          <h2 className="form-header__title">
             Customer Segmentation
           </h2>
-          <p style={{ color: "#555" }}>
+          <p className="form-header__copy">
             Fill in the customer details below to predict their cluster.
           </p>
+          {error ? (
+            <div className="alert alert-danger mt-3" role="alert">
+              {error}
+            </div>
+          ) : null}
           <hr />
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Section 1: Personal Info */}
-          <h5 className="mb-3" style={{ color: "#1a73e8", fontWeight: "700" }}>
+          <h5 className="mb-3 form-section-title">
             👤 Personal Information
           </h5>
           <div className="row g-3 mb-4">
@@ -74,7 +121,7 @@ function PredictionForm() {
               <label style={labelStyle}>Age</label>
               <input
                 type="number"
-                className="form-control"
+                className="form-control app-input"
                 name="age"
                 placeholder="Customer Age"
                 value={formData.age}
@@ -87,7 +134,7 @@ function PredictionForm() {
             <div className="col-md-6">
               <label style={labelStyle}>Education</label>
               <select
-                className="form-control"
+                className="form-control app-input"
                 name="education"
                 value={formData.education}
                 onChange={handleChange}
@@ -106,7 +153,7 @@ function PredictionForm() {
             <div className="col-md-6">
               <label style={labelStyle}>Married</label>
               <select
-                className="form-control"
+                className="form-control app-input"
                 name="married"
                 value={formData.married}
                 onChange={handleChange}
@@ -122,7 +169,7 @@ function PredictionForm() {
             <div className="col-md-6">
               <label style={labelStyle}>Has Kids</label>
               <select
-                className="form-control"
+                className="form-control app-input"
                 name="hasKids"
                 value={formData.hasKids}
                 onChange={handleChange}
@@ -139,7 +186,7 @@ function PredictionForm() {
               <label style={labelStyle}>Number of Children</label>
               <input
                 type="number"
-                className="form-control"
+                className="form-control app-input"
                 name="numChildren"
                 placeholder="No. of Children"
                 value={formData.numChildren}
@@ -153,7 +200,7 @@ function PredictionForm() {
               <label style={labelStyle}>Income of Customer</label>
               <input
                 type="number"
-                className="form-control"
+                className="form-control app-input"
                 name="income"
                 placeholder="Customer Income"
                 value={formData.income}
@@ -167,7 +214,7 @@ function PredictionForm() {
               <label style={labelStyle}>Total Money Spending</label>
               <input
                 type="number"
-                className="form-control"
+                className="form-control app-input"
                 name="totalSpending"
                 placeholder="Total Money Spending"
                 value={formData.totalSpending}
@@ -181,7 +228,7 @@ function PredictionForm() {
               <label style={labelStyle}>Days of Being Customer</label>
               <input
                 type="number"
-                className="form-control"
+                className="form-control app-input"
                 name="daysCustomer"
                 placeholder="Days as Customer"
                 value={formData.daysCustomer}
@@ -193,7 +240,7 @@ function PredictionForm() {
           </div>
 
           {/* Section 2: Spending */}
-          <h5 className="mb-3" style={{ color: "#1a73e8", fontWeight: "700" }}>
+          <h5 className="mb-3 form-section-title">
             🛒 Spending in Last 2 Years
           </h5>
           <div className="row g-3 mb-4">
@@ -233,7 +280,7 @@ function PredictionForm() {
                 <label style={labelStyle}>{field.label}</label>
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control app-input"
                   name={field.name}
                   placeholder={field.placeholder}
                   value={formData[field.name]}
@@ -246,7 +293,7 @@ function PredictionForm() {
           </div>
 
           {/* Section 3: Purchase Behaviour */}
-          <h5 className="mb-3" style={{ color: "#1a73e8", fontWeight: "700" }}>
+          <h5 className="mb-3 form-section-title">
             📦 Purchase Behaviour
           </h5>
           <div className="row g-3 mb-4">
@@ -286,7 +333,7 @@ function PredictionForm() {
                 <label style={labelStyle}>{field.label}</label>
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control app-input"
                   name={field.name}
                   placeholder={field.placeholder}
                   value={formData[field.name]}
@@ -302,18 +349,18 @@ function PredictionForm() {
           <div className="text-center mt-4 mb-5">
             <button
               type="submit"
-              className="btn px-5 py-3"
-              style={{
-                backgroundColor: "#1a73e8",
-                color: "white",
-                fontWeight: "700",
-                fontSize: "1.1rem",
-                borderRadius: "8px",
-                border: "none",
-                minWidth: "260px",
-              }}
+              className="btn px-5 py-3 primary-action-button"
+              disabled={loading}
+              aria-busy={loading}
             >
-              🔍 Predict Customer Cluster
+              {loading ? (
+                <span className="button-loading" aria-live="polite">
+                  <span className="button-spinner" aria-hidden="true" />
+                  Predicting...
+                </span>
+              ) : (
+                "🔍 Predict Customer Cluster"
+              )}
             </button>
           </div>
         </form>
