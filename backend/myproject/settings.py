@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1 server.debasisbiswas.in customeriq-api.onrender.com").split()
 
@@ -146,10 +146,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://server.debasisbiswas.in",
+    "https://threathunter.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://server.debasisbiswas.in",
+    "https://threathunter.vercel.app",
 ]
 
 REST_FRAMEWORK = {
