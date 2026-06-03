@@ -29,6 +29,7 @@ const Field = ({
   options,
   value,
   onChange,
+  required = false,
 }) => (
   <div className="col-md-6 col-lg-4">
     <label style={labelStyle}>{label}</label>
@@ -38,7 +39,7 @@ const Field = ({
         value={value}
         onChange={onChange}
         style={inputStyle}
-        required
+        required={required}
       >
         <option value="">Select...</option>
         {options.map((o) => (
@@ -55,7 +56,7 @@ const Field = ({
         value={value}
         onChange={onChange}
         style={inputStyle}
-        required
+        required={required}
       />
     )}
   </div>
@@ -222,6 +223,7 @@ function PredictionForm() {
               placeholder="e.g. 60000"
               value={formData.income}
               onChange={handleChange}
+              required={true}
             />
             <Field
               label="Total Spending"
@@ -229,6 +231,7 @@ function PredictionForm() {
               placeholder="e.g. 1200"
               value={formData.totalSpending}
               onChange={handleChange}
+              required={true}
             />
             <Field
               label="Days as Customer"

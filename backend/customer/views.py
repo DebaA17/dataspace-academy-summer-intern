@@ -26,7 +26,22 @@ else:
 def load_dashboard_dataframe() -> pd.DataFrame:
     """Load dashboard data from the processed customer dataset."""
     try:
-        return pd.read_csv(DATA_PATH)
+        df = pd.read_csv(DATA_PATH)
+        if "Cluster" not in df.columns:
+            def get_cluster(row):
+                spending = row.get("TotalSpending", 0) / 100
+                income = row.get("Income", 0) / 10000
+                score = spending + income
+                if score > 15:
+                    return 0
+                elif score > 8:
+                    return 1
+                elif score > 3:
+                    return 2
+                else:
+                    return 3
+            df["Cluster"] = df.apply(get_cluster, axis=1)
+        return df
     except FileNotFoundError as exc:
         logger.warning("Dashboard data file not found: %s", DATA_PATH)
         raise RuntimeError("Data not found") from exc
@@ -176,7 +191,7 @@ class RecentCustomersView(APIView):
                 "Aditi Rao", "Vijay Mallya", "Deepak Gupta", "Rajesh Khanna", "Sanjay Dutt"
             ]
             customers = []
-            for _, row in df.head(20).iterrows():
+            for _, row in df.iterrows():
                 row_id = int(row["ID"]) if "ID" in row else 0
                 customers.append(
                     {

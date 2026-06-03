@@ -208,7 +208,7 @@ function Customers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((c) => {
+                {filtered.map((c, index) => {
                   const cs = clusterStyle[c.cluster];
                   return (
                     <tr
@@ -216,7 +216,7 @@ function Customers() {
                       style={{ borderBottom: "1px solid #f4f5f7" }}
                     >
                       <td style={{ padding: "10px 12px", color: "#aaa" }}>
-                        {c.id}
+                        {index + 1}
                       </td>
                       <td
                         style={{
