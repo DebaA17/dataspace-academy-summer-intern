@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or get_random_secret_key()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["server.debasisbiswas.in", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -133,6 +133,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://server.debasisbiswas.in",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://server.debasisbiswas.in",
 ]
 
 REST_FRAMEWORK = {

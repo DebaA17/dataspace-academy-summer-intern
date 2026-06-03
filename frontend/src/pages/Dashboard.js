@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import {
@@ -14,12 +14,12 @@ import {
   Legend,
 } from "recharts";
 
-const clusterDist = [
-  { name: "Premium", value: 32, color: "#534AB7" },
-  { name: "Regular", value: 41, color: "#1D9E75" },
-  { name: "Budget", value: 18, color: "#185FA5" },
-  { name: "Occasional", value: 9, color: "#EF9F27" },
-];
+const colors = {
+  Premium: "#534AB7",
+  Regular: "#1D9E75",
+  Budget: "#185FA5",
+  Occasional: "#EF9F27"
+};
 
 const ageData = [
   { age: "18-25", customers: 120 },
@@ -46,6 +46,70 @@ const spendingData = [
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+  const [segments, setSegments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsRes, segmentsRes] = await Promise.all([
+          fetch("/api/dashboard/stats/"),
+          fetch("/api/segments/")
+        ]);
+
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
+        if (segmentsRes.ok) {
+          const segmentsData = await segmentsRes.json();
+          setSegments(segmentsData);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const clusterDist = segments.map(s => ({
+    name: s.name,
+    value: s.percentage,
+    color: colors[s.name] || "#ccc"
+  }));
+
+  const metricCards = stats ? [
+    {
+      label: "Total Customers",
+      value: stats.total_customers.toLocaleString(),
+      trend: `Avg Age: ${stats.avg_age}`,
+      up: true,
+    },
+    {
+      label: "Avg Annual Income",
+      value: `₹${Math.round(stats.avg_income).toLocaleString()}`,
+      trend: "Based on real tax files",
+      up: true,
+    },
+    {
+      label: "Model Accuracy",
+      value: `${stats.model_accuracy}%`,
+      trend: "XGBoost Classification",
+      up: true,
+    },
+    {
+      label: "Active Customers",
+      value: stats.active_customers.toLocaleString(),
+      trend: "Interacted in last 60 days",
+      up: true,
+    },
+  ] : [
+    { label: "Total Customers", value: "Loading...", trend: "", up: true },
+    { label: "Avg Annual Income", value: "Loading...", trend: "", up: true },
+    { label: "Model Accuracy", value: "Loading...", trend: "", up: true },
+    { label: "Active Customers", value: "Loading...", trend: "", up: true },
+  ];
 
   return (
     <div className="app-shell">
@@ -76,32 +140,7 @@ function Dashboard() {
 
         {/* Metric Cards */}
         <div className="row g-3 mb-4">
-          {[
-            {
-              label: "Total Customers",
-              value: "1,000",
-              trend: "↑ 12% this month",
-              up: true,
-            },
-            {
-              label: "Total Revenue",
-              value: "₹98K",
-              trend: "↑ 8% this month",
-              up: true,
-            },
-            {
-              label: "No. of Clusters",
-              value: "4",
-              trend: "Premium · Regular · Budget · Occasional",
-              up: true,
-            },
-            {
-              label: "Avg Spending",
-              value: "₹3,200",
-              trend: "↓ 2% this month",
-              up: false,
-            },
-          ].map((m) => (
+          {metricCards.map((m) => (
             <div className="col-6 col-md-3" key={m.label}>
               <div className="metric-card">
                 <div className="label">{m.label}</div>
@@ -163,8 +202,8 @@ function Dashboard() {
                   />
                   <Tooltip formatter={(v) => `₹${v.toLocaleString()}`} />
                   <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
-                    {revenueData.map((_, i) => (
-                      <Cell key={i} fill={clusterDist[i].color} />
+                    {revenueData.map((entry, i) => (
+                      <Cell key={i} fill={colors[entry.name] || "#ccc"} />
                     ))}
                   </Bar>
                 </BarChart>

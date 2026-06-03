@@ -5,11 +5,6 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    navigate("/login");
-  };
-
   const navItems = [
     { path: "/dashboard", icon: "📊", label: "Dashboard" },
     { path: "/predict", icon: "🔍", label: "Predict" },
@@ -105,65 +100,23 @@ function Sidebar() {
         })}
       </nav>
 
-      {/* User Footer */}
+      {/* Back to Home Link */}
       <div style={{ padding: "12px 10px", borderTop: "1px solid #e9ecef" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 10px",
-            backgroundColor: "#f4f5f7",
-            borderRadius: "8px",
-            marginBottom: "8px",
-          }}
-        >
-          <div
-            style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
-              background: "#9FE1CB",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "11px",
-              fontWeight: "600",
-              color: "#085041",
-            }}
-          >
-            A
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                fontWeight: "600",
-                color: "#1a1a2e",
-              }}
-            >
-              Admin
-            </div>
-            <div style={{ fontSize: "0.7rem", color: "#888" }}>
-              admin@cip.com
-            </div>
-          </div>
-        </div>
         <button
-          onClick={handleLogout}
+          onClick={() => navigate("/")}
           style={{
             width: "100%",
-            padding: "7px",
+            padding: "8px",
             borderRadius: "7px",
             border: "1px solid #e9ecef",
             backgroundColor: "#fff",
-            color: "#D85A30",
+            color: "#534AB7",
             fontSize: "0.82rem",
             fontWeight: "600",
             cursor: "pointer",
           }}
         >
-          🚪 Logout
+          🏠 Back to Home
         </button>
       </div>
     </div>

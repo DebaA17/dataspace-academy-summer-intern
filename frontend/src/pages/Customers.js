@@ -1,129 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
-
-const SAMPLE_CUSTOMERS = [
-  {
-    id: 1,
-    name: "Amit Sharma",
-    age: 42,
-    income: 92000,
-    spending: 1820,
-    cluster: "Premium",
-    visits: 14,
-    education: "PhD",
-  },
-  {
-    id: 2,
-    name: "Priya Mehta",
-    age: 31,
-    income: 54000,
-    spending: 640,
-    cluster: "Regular",
-    visits: 7,
-    education: "Graduation",
-  },
-  {
-    id: 3,
-    name: "Ravi Kumar",
-    age: 25,
-    income: 28000,
-    spending: 190,
-    cluster: "Budget",
-    visits: 3,
-    education: "Basic",
-  },
-  {
-    id: 4,
-    name: "Sneha Iyer",
-    age: 38,
-    income: 61000,
-    spending: 870,
-    cluster: "Regular",
-    visits: 9,
-    education: "Master",
-  },
-  {
-    id: 5,
-    name: "Karan Patel",
-    age: 55,
-    income: 110000,
-    spending: 2400,
-    cluster: "Premium",
-    visits: 18,
-    education: "PhD",
-  },
-  {
-    id: 6,
-    name: "Divya Nair",
-    age: 29,
-    income: 31000,
-    spending: 160,
-    cluster: "Occasional",
-    visits: 2,
-    education: "Graduation",
-  },
-  {
-    id: 7,
-    name: "Suresh Reddy",
-    age: 47,
-    income: 75000,
-    spending: 1100,
-    cluster: "Premium",
-    visits: 11,
-    education: "Master",
-  },
-  {
-    id: 8,
-    name: "Ananya Das",
-    age: 33,
-    income: 43000,
-    spending: 420,
-    cluster: "Regular",
-    visits: 6,
-    education: "Graduation",
-  },
-  {
-    id: 9,
-    name: "Mohit Verma",
-    age: 22,
-    income: 22000,
-    spending: 95,
-    cluster: "Budget",
-    visits: 2,
-    education: "Basic",
-  },
-  {
-    id: 10,
-    name: "Pooja Singh",
-    age: 36,
-    income: 58000,
-    spending: 730,
-    cluster: "Regular",
-    visits: 8,
-    education: "Master",
-  },
-  {
-    id: 11,
-    name: "Vikram Joshi",
-    age: 50,
-    income: 98000,
-    spending: 2100,
-    cluster: "Premium",
-    visits: 16,
-    education: "PhD",
-  },
-  {
-    id: 12,
-    name: "Neha Gupta",
-    age: 27,
-    income: 35000,
-    spending: 220,
-    cluster: "Budget",
-    visits: 3,
-    education: "Graduation",
-  },
-];
 
 const clusterStyle = {
   Premium: { bg: "#EEEDFE", color: "#534AB7" },
@@ -136,8 +13,36 @@ function Customers() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [customers, setCustomers] = useState([]);
+  const [segments, setSegments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = SAMPLE_CUSTOMERS.filter((c) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [custRes, segRes] = await Promise.all([
+          fetch("/api/customers/recent/"),
+          fetch("/api/segments/")
+        ]);
+
+        if (custRes.ok) {
+          const custData = await custRes.json();
+          setCustomers(custData);
+        }
+        if (segRes.ok) {
+          const segData = await segRes.json();
+          setSegments(segData);
+        }
+      } catch (err) {
+        console.error("Error fetching customer data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === "All" || c.cluster === filter;
     return matchSearch && matchFilter;
@@ -173,15 +78,15 @@ function Customers() {
         {/* Stats Row */}
         <div className="row g-3 mb-4">
           {["Premium", "Regular", "Budget", "Occasional"].map((cls) => {
-            const count = SAMPLE_CUSTOMERS.filter(
-              (c) => c.cluster === cls,
-            ).length;
+            const segInfo = segments.find(s => s.name === cls);
+            const count = segInfo ? segInfo.count : 0;
+            const percentage = segInfo ? segInfo.percentage : 0;
             const style = clusterStyle[cls];
             return (
               <div className="col-6 col-md-3" key={cls}>
                 <div className="metric-card text-center">
                   <div className="label">{cls}</div>
-                  <div className="value">{count}</div>
+                  <div className="value">{loading ? "..." : count.toLocaleString()}</div>
                   <span
                     style={{
                       backgroundColor: style.bg,
@@ -194,8 +99,7 @@ function Customers() {
                       marginTop: "4px",
                     }}
                   >
-                    {Math.round((count / SAMPLE_CUSTOMERS.length) * 100)}% of
-                    total
+                    {loading ? "..." : `${percentage}%`} of total
                   </span>
                 </div>
               </div>
@@ -396,7 +300,7 @@ function Customers() {
                         color: "#aaa",
                       }}
                     >
-                      No customers found.
+                      {loading ? "Loading customer profiles..." : "No customers found."}
                     </td>
                   </tr>
                 )}

@@ -5,7 +5,8 @@
   "scripts": {
     "start": "pnpm --dir frontend start",
     "start:frontend": "pnpm --dir frontend start",
-    "start:backend": "./.venv/bin/python backend/manage.py runserver 127.0.0.1:8000"
+    "start:backend": "./.venv/bin/python backend/manage.py runserver 127.0.0.1:8000",
+    "test": "pnpm --dir frontend test"
   },
   "dependencies": {
     "recharts": "^3.8.1"

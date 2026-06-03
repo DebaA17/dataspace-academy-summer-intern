@@ -108,22 +108,14 @@ const allClusters = [
   { name: "Occasional", value: 9, color: "#EF9F27" },
 ];
 
-function getMockCluster(data) {
-  const income = parseFloat(data?.income || 0);
-  const spending = parseFloat(data?.totalSpending || 0);
-  const visits = parseFloat(data?.numWebVisits || 0);
-  if (income >= 80000 && spending >= 1000) return "premium";
-  if (visits <= 2 || spending <= 200) return "occasional";
-  if (income < 40000 && spending < 500) return "budget";
-  return "regular";
-}
+// Result component display logic
 
 function Result() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData } = location.state || {};
+  const { predictionResult, formData } = location.state || {};
 
-  if (!formData) {
+  if (!formData || !predictionResult) {
     return (
       <div className="app-shell">
         <Sidebar />
@@ -151,7 +143,13 @@ function Result() {
     );
   }
 
-  const clusterKey = getMockCluster(formData);
+  const CLUSTER_MAP = {
+    0: "budget",
+    1: "premium",
+    2: "regular",
+    3: "occasional"
+  };
+  const clusterKey = CLUSTER_MAP[predictionResult.predicted_cluster] || "regular";
   const cluster = CLUSTERS[clusterKey];
 
   return (

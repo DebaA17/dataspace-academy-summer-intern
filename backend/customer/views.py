@@ -1,31 +1,19 @@
 import logging
 from pathlib import Path
 
-import joblib
 import pandas as pd
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import CustomerInputSerializer, PredictionResponseSerializer
+from .serializers import CustomerInputSerializer
 
 
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 ML_DIR = BASE_DIR / "ml"
-MODEL_PATH = ML_DIR / "models" / "customer_cluster_model.pkl"
 DATA_PATH = ML_DIR / "data" / "processed" / "cleaned_customer_data.csv"
-
-
-def load_ml_model():
-    """Load the trained ML model if it exists and can be deserialized."""
-    try:
-        if MODEL_PATH.exists():
-            return joblib.load(MODEL_PATH)
-    except (OSError, EOFError, ValueError) as exc:
-        logger.warning("Failed to load ML model from %s: %s", MODEL_PATH, exc)
-    return None
 
 
 def load_dashboard_dataframe() -> pd.DataFrame:
@@ -172,14 +160,25 @@ class RecentCustomersView(APIView):
         try:
             df = load_dashboard_dataframe()
             cluster_names = {0: "Premium", 1: "Regular", 2: "Budget", 3: "Occasional"}
+            names = [
+                "Amit Sharma", "Priya Mehta", "Ravi Kumar", "Sneha Iyer", "Karan Patel",
+                "Divya Nair", "Suresh Reddy", "Ananya Das", "Mohit Verma", "Pooja Singh",
+                "Vikram Joshi", "Neha Gupta", "Arjun Rao", "Sunita Krishnan", "Rahul Bose",
+                "Aditi Rao", "Vijay Mallya", "Deepak Gupta", "Rajesh Khanna", "Sanjay Dutt"
+            ]
             customers = []
             for _, row in df.head(20).iterrows():
+                row_id = int(row["ID"]) if "ID" in row else 0
                 customers.append(
                     {
-                        "id": int(row["ID"]) if "ID" in row else 0,
+                        "id": row_id,
+                        "name": names[row_id % len(names)],
                         "age": int(row["Age"]),
-                        "income": f"Rs {int(row['Income']):,}",
-                        "cluster_name": cluster_names.get(int(row["Cluster"]), "Unknown"),
+                        "education": str(row.get("Education_Simplified", row.get("Education", "Graduation"))),
+                        "income": int(row["Income"]) if not pd.isna(row["Income"]) else 0,
+                        "spending": int(row.get("TotalSpending", 0)),
+                        "visits": int(row.get("NumWebVisitsMonth", 0)),
+                        "cluster": cluster_names.get(int(row["Cluster"]), "Unknown"),
                     }
                 )
             return Response(customers)

@@ -74,7 +74,7 @@ const Section = ({ title, children }) => (
 function PredictionForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error] = useState("");
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     age: "",
     education: "",
@@ -102,13 +102,48 @@ function PredictionForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    setError("");
+
+    // Map frontend states to Django CustomerInputSerializer expectation
+    const payload = {
+      age: parseInt(formData.age) || 0,
+      income: parseFloat(formData.income) || 0,
+      total_spending: parseFloat(formData.totalSpending) || 0,
+      education: formData.education || "Graduation",
+      marital_status: formData.married === "1" ? "Married" : "Single",
+      num_web_purchases: parseInt(formData.numWebPurchases) || 0,
+      num_store_purchases: parseInt(formData.numStorePurchases) || 0,
+      num_catalog_purchases: parseInt(formData.numCatalogPurchases) || 0,
+      num_web_visits_month: parseInt(formData.numWebVisits) || 0,
+      recency: 30, // standard mid-month fallback
+      total_children: formData.hasKids === "1" ? (parseInt(formData.numChildren) || 0) : 0,
+    };
+
+    try {
+      const response = await fetch("/api/predict/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate prediction. Check your values.");
+      }
+
+      const resultData = await response.json();
+      navigate("/result", { state: { predictionResult: resultData, formData } });
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to connect to the backend server. Please verify Django is running.");
+    } finally {
       setLoading(false);
-      navigate("/result", { state: { formData } });
-    }, 1500);
+    }
   };
 
   return (
