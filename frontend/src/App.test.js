@@ -11,6 +11,6 @@ test('renders the home screen', () => {
     </MemoryRouter>,
   );
 
-  expect(screen.getByText(/AI Powered Analysis/i)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /Get Started/i })).toBeInTheDocument();
+  expect(screen.getByText(/AI Customer Intelligence/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Start Analysis/i })).toBeInTheDocument();
 });

@@ -9,8 +9,12 @@ function Navbar() {
       <div className="container">
         {/* Logo / Brand */}
         <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
-          <div className="brand-badge">CI</div>
-          <span className="brand-title">Customer Intelligence Platform</span>
+          <div className="brand-badge">
+            IQ
+          </div>
+          <span className="brand-title">
+            CustomerIQ
+          </span>
         </Link>
 
         {/* Hamburger for mobile */}
