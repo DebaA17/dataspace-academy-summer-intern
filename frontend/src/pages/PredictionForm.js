@@ -74,6 +74,7 @@ const Section = ({ title, children }) => (
 function PredictionForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error] = useState("");
   const [formData, setFormData] = useState({
     age: "",
     education: "",
