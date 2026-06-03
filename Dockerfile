@@ -25,7 +25,8 @@ RUN chown -R appuser:appgroup /app
 # Switch to non-root user
 USER appuser
 
-# Django development server port
-EXPOSE 5000
+# Expose the default Gunicorn port
+EXPOSE 8000
 
-CMD ["python", "backend/manage.py", "runserver", "0.0.0.0:5000"]
+# Compile static admin assets and launch Gunicorn production server
+CMD ["sh", "-c", "python backend/manage.py collectstatic --noinput && gunicorn --chdir backend --bind 0.0.0.0:${PORT:-8000} --workers 3 myproject.wsgi:application"]

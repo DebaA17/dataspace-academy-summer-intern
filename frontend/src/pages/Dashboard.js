@@ -52,9 +52,13 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const headers = {
+          "Content-Type": "application/json",
+          "Authorization": `Token ${localStorage.getItem("authToken")}`
+        };
         const [statsRes, segmentsRes] = await Promise.all([
-          fetch("/api/dashboard/stats/"),
-          fetch("/api/segments/")
+          fetch("/api/dashboard/stats/", { headers }),
+          fetch("/api/segments/", { headers })
         ]);
 
         if (statsRes.ok) {

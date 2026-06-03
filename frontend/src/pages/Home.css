@@ -731,3 +731,32 @@
 .landing-wrapper.dark-theme .accent-circle-float {
   border-color: rgba(99, 102, 241, 0.15);
 }
+
+/* Responsive header adjustments for smaller mobile screens */
+@media (max-width: 600px) {
+  .header-container {
+    padding: 12px 14px;
+  }
+  .brand-text {
+    font-size: 1.1rem;
+  }
+  .brand-logo-container {
+    width: 26px;
+    height: 26px;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .signin-link {
+    font-size: 0.82rem;
+  }
+  .get-started-btn {
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+  }
+}

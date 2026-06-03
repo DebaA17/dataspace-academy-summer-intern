@@ -100,8 +100,8 @@ function Sidebar() {
         })}
       </nav>
 
-      {/* Back to Home Link */}
-      <div style={{ padding: "12px 10px", borderTop: "1px solid #e9ecef" }}>
+      {/* Sidebar Footer actions */}
+      <div style={{ padding: "12px 10px", borderTop: "1px solid #e9ecef", display: "flex", flexDirection: "column", gap: "8px" }}>
         <button
           onClick={() => navigate("/")}
           style={{
@@ -117,6 +117,44 @@ function Sidebar() {
           }}
         >
           🏠 Back to Home
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              const token = localStorage.getItem("authToken");
+              if (token) {
+                await fetch("/api/logout/", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`
+                  }
+                });
+              }
+            } catch (err) {
+              console.error("Failed to logout from backend:", err);
+            } finally {
+              localStorage.removeItem("authToken");
+              localStorage.removeItem("username");
+              navigate("/");
+            }
+          }}
+          style={{
+            width: "100%",
+            padding: "8px",
+            borderRadius: "7px",
+            border: "1px solid rgba(239, 68, 68, 0.2)",
+            backgroundColor: "rgba(239, 68, 68, 0.05)",
+            color: "#ef4444",
+            fontSize: "0.82rem",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease"
+          }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = "rgba(239, 68, 68, 0.1)"}
+          onMouseLeave={(e) => e.target.style.backgroundColor = "rgba(239, 68, 68, 0.05)"}
+        >
+          🚪 Logout
         </button>
       </div>
     </div>

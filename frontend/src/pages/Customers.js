@@ -20,9 +20,13 @@ function Customers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const headers = {
+          "Content-Type": "application/json",
+          "Authorization": `Token ${localStorage.getItem("authToken")}`
+        };
         const [custRes, segRes] = await Promise.all([
-          fetch("/api/customers/recent/"),
-          fetch("/api/segments/")
+          fetch("/api/customers/recent/", { headers }),
+          fetch("/api/segments/", { headers })
         ]);
 
         if (custRes.ok) {

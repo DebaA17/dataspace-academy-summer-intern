@@ -86,9 +86,9 @@ function Home() {
                 </svg>
               )}
             </button>
-            <a className="signin-link" href={window.location.port === "3000" ? "http://localhost:8000/admin/" : "/admin/"}>
+            <Link className="signin-link" to="/login">
               Sign in
-            </a>
+            </Link>
             <button className="get-started-btn" onClick={() => navigate("/predict")}>
               Get started
             </button>
