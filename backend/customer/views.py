@@ -5,7 +5,7 @@ import pandas as pd
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User  # type: ignore
@@ -133,6 +133,7 @@ class PredictClusterView(APIView):
 
 class DashboardStatsView(APIView):
     """Get dashboard statistics."""
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         try:
@@ -146,13 +147,17 @@ class DashboardStatsView(APIView):
                 "model_accuracy": 97.4,
             }
             return Response(stats)
-        except (RuntimeError, KeyError, ValueError) as exc:
-            logger.warning("Failed to build dashboard stats: %s", exc)
-            return Response({"error": "Data not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as exc:
+            logger.error("Failed to build recent customers response: %s", exc, exc_info=True)
+            return Response(
+                {"error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class SegmentStatsView(APIView):
     """Get customer segment breakdown."""
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         try:
@@ -169,16 +174,17 @@ class SegmentStatsView(APIView):
                     }
                 )
             return Response(segments)
-        except (RuntimeError, KeyError, ValueError, ZeroDivisionError) as exc:
-            logger.warning("Failed to build segment stats: %s", exc)
+        except Exception as exc:
+            logger.error("Failed to build recent customers response: %s", exc, exc_info=True)
             return Response(
-                {"error": "No segments found"},
+                {"error": str(exc)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
 class RecentCustomersView(APIView):
     """Get recent customers."""
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         try:
@@ -206,10 +212,10 @@ class RecentCustomersView(APIView):
                     }
                 )
             return Response(customers)
-        except (RuntimeError, KeyError, ValueError) as exc:
-            logger.warning("Failed to build recent customers response: %s", exc)
+        except Exception as exc:
+            logger.error("Failed to build recent customers response: %s", exc, exc_info=True)
             return Response(
-                {"error": "No customers found"},
+                {"error": str(exc)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -227,7 +233,8 @@ class CustomObtainAuthToken(ObtainAuthToken):
             'token': token.key,
             'user_id': user.pk,
             'email': user.email,
-            'username': user.username
+            'username': user.username,
+            'is_staff': user.is_staff
         })
 
 

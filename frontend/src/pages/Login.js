@@ -35,7 +35,12 @@ function Login() {
       if (response.ok) {
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("username", data.username);
-        navigate("/dashboard");
+        localStorage.setItem("isStaff", data.is_staff ? "true" : "false");
+        if (data.is_staff) {
+          navigate("/dashboard");
+        } else {
+          navigate("/predict");
+        }
       } else {
         setError(data.non_field_errors ? data.non_field_errors[0] : "Invalid username or password.");
       }

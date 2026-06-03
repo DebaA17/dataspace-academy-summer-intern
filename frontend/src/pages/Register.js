@@ -42,8 +42,13 @@ function Register() {
         // Automatically log the user in after successful registration
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("username", data.username);
+        localStorage.setItem("isStaff", data.is_staff ? "true" : "false");
         setTimeout(() => {
-          navigate("/dashboard");
+          if (data.is_staff) {
+            navigate("/dashboard");
+          } else {
+            navigate("/predict");
+          }
         }, 1500);
       } else {
         setError(data.error || "Failed to register. Please check your inputs.");

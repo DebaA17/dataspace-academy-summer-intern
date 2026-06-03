@@ -147,11 +147,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://server.debasisbiswas.in",
     "https://threathunter.vercel.app",
+    "https://customeriq.debasisbiswas.in",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://server.debasisbiswas.in",
     "https://threathunter.vercel.app",
+    "https://customeriq.debasisbiswas.in",
 ]
 
 REST_FRAMEWORK = {

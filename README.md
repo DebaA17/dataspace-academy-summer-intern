@@ -1,4 +1,4 @@
-<h1 align="center">DataSpace Customer Categorization System</h1>
+<h1 align="center">Customer Categorization System</h1>
 
 <p align="center">
   <a href="https://github.com/DebaA17/dataspace-academy-summer-intern/actions/workflows/python-ci.yml">

@@ -5,12 +5,14 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isStaff = localStorage.getItem("isStaff") === "true";
+
   const navItems = [
-    { path: "/dashboard", icon: "📊", label: "Dashboard" },
+    { path: "/dashboard", icon: "📊", label: "Dashboard", adminOnly: true },
     { path: "/predict", icon: "🔍", label: "Predict" },
-    { path: "/customers", icon: "👥", label: "Customers" },
-    { path: "/billing", icon: "🧾", label: "Billing" },
-  ];
+    { path: "/customers", icon: "👥", label: "Customers", adminOnly: true },
+    { path: "/billing", icon: "🧾", label: "Billing", adminOnly: true },
+  ].filter(item => !item.adminOnly || isStaff);
 
   return (
     <div
@@ -164,6 +166,8 @@ function Sidebar() {
             } finally {
               localStorage.removeItem("authToken");
               localStorage.removeItem("username");
+              localStorage.removeItem("isStaff");
+              localStorage.removeItem("isAdmin");
               navigate("/");
             }
           }}

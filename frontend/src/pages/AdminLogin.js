@@ -33,10 +33,15 @@ function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
+        if (!data.is_staff) {
+          setError("Access denied. This portal is for administrators only.");
+          return;
+        }
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("username", data.username);
         // Save flag to indicate it's an admin session if they logged in via admin portal
         localStorage.setItem("isAdmin", "true");
+        localStorage.setItem("isStaff", "true");
         navigate("/dashboard");
       } else {
         setError(data.non_field_errors ? data.non_field_errors[0] : "Invalid admin credentials.");
