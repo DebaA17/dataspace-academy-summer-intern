@@ -29,6 +29,13 @@ function Customers() {
           fetch("/api/segments/", { headers })
         ]);
 
+        if (custRes.status === 401 || segRes.status === 401) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("username");
+          navigate("/login");
+          return;
+        }
+
         if (custRes.ok) {
           const custData = await custRes.json();
           setCustomers(custData);
@@ -44,7 +51,7 @@ function Customers() {
       }
     };
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());

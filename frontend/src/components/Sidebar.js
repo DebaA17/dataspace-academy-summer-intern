@@ -100,6 +100,34 @@ function Sidebar() {
         })}
       </nav>
 
+      {/* Logged In User Profile Card */}
+      <div style={{ padding: "12px 16px", borderTop: "1px solid #e9ecef", display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{
+          width: "32px",
+          height: "32px",
+          borderRadius: "50%",
+          backgroundColor: "#EEEDFE",
+          color: "#534AB7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: "700",
+          fontSize: "14px",
+          textTransform: "uppercase",
+          flexShrink: 0
+        }}>
+          {(localStorage.getItem("username") || "U").charAt(0)}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <span style={{ fontSize: "0.85rem", fontWeight: "600", color: "#1a1a2e", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
+            {localStorage.getItem("username") || "User"}
+          </span>
+          <span style={{ fontSize: "0.7rem", color: "#888" }}>
+            Active Profile
+          </span>
+        </div>
+      </div>
+
       {/* Sidebar Footer actions */}
       <div style={{ padding: "12px 10px", borderTop: "1px solid #e9ecef", display: "flex", flexDirection: "column", gap: "8px" }}>
         <button

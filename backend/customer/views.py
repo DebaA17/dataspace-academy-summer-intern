@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User  # type: ignore
 
 from .serializers import CustomerInputSerializer
 
@@ -16,8 +16,11 @@ from .serializers import CustomerInputSerializer
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-ML_DIR = BASE_DIR / "ml"
-DATA_PATH = ML_DIR / "data" / "processed" / "cleaned_customer_data.csv"
+LOCAL_DATA_PATH = Path(__file__).resolve().parent / "cleaned_customer_data.csv"
+if LOCAL_DATA_PATH.exists():
+    DATA_PATH = LOCAL_DATA_PATH
+else:
+    DATA_PATH = BASE_DIR / "ml" / "data" / "processed" / "cleaned_customer_data.csv"
 
 
 def load_dashboard_dataframe() -> pd.DataFrame:
@@ -204,7 +207,7 @@ class CustomObtainAuthToken(ObtainAuthToken):
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
+        token, created = Token.objects.get_or_create(user=user)  # type: ignore
         return Response({
             'token': token.key,
             'user_id': user.pk,
@@ -247,7 +250,7 @@ class RegisterView(APIView):
                 password=password
             )
 
-            token, created = Token.objects.get_or_create(user=user)
+            token, created = Token.objects.get_or_create(user=user)  # type: ignore
             return Response(
                 {
                     "message": "User registered successfully.",

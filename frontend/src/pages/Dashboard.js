@@ -61,6 +61,13 @@ function Dashboard() {
           fetch("/api/segments/", { headers })
         ]);
 
+        if (statsRes.status === 401 || segmentsRes.status === 401) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("username");
+          navigate("/login");
+          return;
+        }
+
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           setStats(statsData);
@@ -75,7 +82,7 @@ function Dashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const clusterDist = segments.map(s => ({
     name: s.name,
