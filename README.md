@@ -10,6 +10,9 @@
   <a href="https://github.com/DebaA17/dataspace-academy-summer-intern/actions/workflows/pr-validation.yml">
     <img src="https://github.com/DebaA17/dataspace-academy-summer-intern/actions/workflows/pr-validation.yml/badge.svg" alt="PR Validation" />
   </a>
+  <a href="https://threathunter-api.onrender.com/health">
+    <img src="https://img.shields.io/website?url=https://threathunter-api.onrender.com/health&amp;label=API%20Status" alt="API Status" />
+  </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
   </a>
