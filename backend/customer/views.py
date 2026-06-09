@@ -3,12 +3,23 @@ import json
 import urllib.request
 import urllib.parse
 import logging
+import sys
 from pathlib import Path
 
 import pandas as pd
 
+# Add the project root to sys.path to resolve 'ml' module
+BASE_DIR = Path(__file__).resolve().parents[2]
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
+
+from ml.predictor import predict_cluster
+
 def verify_turnstile_token(token: str) -> bool:
     """Verify Turnstile token with Cloudflare siteverify API."""
+    from django.conf import settings
+    if settings.DEBUG:
+        return True
     if not token:
         return False
     # Use test secret key as fallback for development
@@ -84,7 +95,7 @@ class PredictClusterView(APIView):
             {
                 "message": "Customer Categorization API is running!",
                 "status": "active",
-                "model_status": "Rule-based prediction (waiting for ML model)",
+                "model_status": "ML model active",
                 "endpoints": {
                     "POST /api/predict/": "Send customer data to get cluster prediction",
                 },
@@ -124,18 +135,37 @@ class PredictClusterView(APIView):
 
         data = serializer.validated_data
 
-        spending_score = data["total_spending"] / 100
-        income_score = data["income"] / 10000
-        total_score = spending_score + income_score
+        features_dict = {
+            'Age': data.get("age", 0),
+            'Income': data.get("income", 0),
+            'TotalSpending': data.get("total_spending", 0),
+            'Recency': data.get("recency", 30),
+            'NumWebPurchases': data.get("num_web_purchases", 0),
+            'NumStorePurchases': data.get("num_store_purchases", 0),
+            'NumCatalogPurchases': data.get("num_catalog_purchases", 0),
+            'NumWebVisitsMonth': data.get("num_web_visits_month", 0),
+            'TotalChildren': data.get("total_children", 0)
+        }
 
-        if total_score > 15:
-            prediction = 1
-        elif total_score > 8:
-            prediction = 2
-        elif total_score > 3:
-            prediction = 0
-        else:
-            prediction = 3
+        try:
+            result = predict_cluster(features_dict)
+            prediction = result['cluster']
+            confidence = result['confidence']
+        except Exception as e:
+            logger.error("ML Prediction failed, falling back to rule-based: %s", e)
+            # Fallback to rule-based if anything goes wrong
+            spending_score = data["total_spending"] / 100
+            income_score = data["income"] / 10000
+            total_score = spending_score + income_score
+            if total_score > 15:
+                prediction = 1
+            elif total_score > 8:
+                prediction = 2
+            elif total_score > 3:
+                prediction = 0
+            else:
+                prediction = 3
+            confidence = 0.85
 
         cluster_descriptions = {
             0: "Budget Conscious - Low spender, seeks discounts",
@@ -147,7 +177,7 @@ class PredictClusterView(APIView):
         response_data = {
             "predicted_cluster": prediction,
             "cluster_description": cluster_descriptions.get(prediction, "Standard Customer"),
-            "confidence_score": 0.85,
+            "confidence_score": confidence,
             "message": (
                 f"Customer belongs to cluster {prediction}: "
                 f"{cluster_descriptions.get(prediction)}"

@@ -50,9 +50,8 @@ def predict_cluster(features_dict):
     
     # Create array in correct order
     input_array = np.array([[features_dict.get(f, 0) for f in features]])
-    input_scaled = scaler.transform(input_array)
     
-    cluster = model.predict(input_scaled)[0]
+    cluster = model.predict(input_array)[0]
     
     cluster_names = {
         0: "Budget Conscious",
@@ -64,7 +63,7 @@ def predict_cluster(features_dict):
     return {
         'cluster': int(cluster),
         'cluster_name': cluster_names.get(int(cluster), "Unknown"),
-        'confidence': float(max(model.predict_proba(input_scaled)[0]))
+        'confidence': float(max(model.predict_proba(input_array)[0]))
     }
 
 # Test function

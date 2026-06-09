@@ -14,6 +14,9 @@ function Register() {
   const turnstileRef = useRef(null);
 
   useEffect(() => {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      setTurnstileToken("dummy-dev-token");
+    }
     const renderTurnstile = () => {
       if (window.turnstile && turnstileRef.current) {
         try {
