@@ -22,9 +22,37 @@ from django.http import JsonResponse
 def health_check(request):
     return JsonResponse({"status": "healthy"})
 
+def root_view(request):
+    return JsonResponse({
+        "name": "CustomerIQ API",
+        "status": "online",
+        "version": "1.0.0",
+        "description": "AI-powered customer segmentation and prediction platform.",
+        "team": "Threat Hunter",
+        "organization": "DataSpace Academy",
+        "institution": "B.P. Poddar Institute of Management and Technology (BPPIMT)",
+        "program": "AI & Machine Learning Summer Internship 2026",
+        "location": "Sector V, Kolkata, India",
+        "maintainers": [
+            "Debasis",
+            "Ruchika",
+            "Sadikul",
+            "Rupsa",
+            "Payel"
+        ],
+        "docs": {
+            "health": "/health/",
+            "api_index": "/api/",
+            "frontend": "https://threathunter.vercel.app",
+            "backend": "https://threathunter-api.onrender.com"
+        },
+        "message": "Welcome to CustomerIQ - Transforming customer data into actionable business insights."
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('customer.urls')),
     path('health', health_check),
     path('health/', health_check),
+    path('', root_view, name='root-info'),
 ]
