@@ -1,0 +1,4 @@
+Contact: https://github.com/DebaA17/dataspace-academy-summer-intern/issues
+Expires: 2027-06-13T12:00:00Z
+Preferred-Languages: en
+Canonical: https://threathunter.vercel.app/.well-known/security.txt

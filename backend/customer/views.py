@@ -42,7 +42,7 @@ def verify_turnstile_token(token: str) -> bool:
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User  # type: ignore
@@ -88,7 +88,7 @@ def load_dashboard_dataframe() -> pd.DataFrame:
 
 
 class PredictClusterView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response(

@@ -22,6 +22,10 @@
   An AI/ML-powered customer segmentation and categorization platform developed during the DataSpace Internship.
 </p>
 
+<p align="center">
+  <img src="docs/assets/dashboard.png" alt="CustomerIQ AI Dashboard" width="100%" />
+</p>
+
 ---
 
 ## 🛠️ Technology Stack
