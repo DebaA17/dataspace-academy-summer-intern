@@ -33,7 +33,7 @@ def verify_turnstile_token(token: str) -> bool:
     
     try:
         req = urllib.request.Request(url, data=data, method="POST")
-        with urllib.request.urlopen(req, timeout=5) as response:
+        with urllib.request.urlopen(req, timeout=5) as response:  # nosec B310
             result = json.loads(response.read().decode("utf-8"))
             return result.get("success", False)
     except Exception as e:
