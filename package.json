@@ -6,7 +6,8 @@
     "start": "node -e \"const fs=require('fs'); const cp=require('child_process'); if(!fs.existsSync('frontend/node_modules/react-scripts')){ console.log('Frontend node_modules missing or incomplete. Installing dependencies...'); cp.execSync('pnpm --dir frontend install', {stdio:'inherit'}); } cp.spawn('pnpm', ['run', 'start:backend'], {stdio:'inherit', shell:true}); cp.spawn('pnpm', ['run', 'start:frontend'], {stdio:'inherit', shell:true});\"",
     "start:frontend": "pnpm --dir frontend start",
     "start:backend": "python3 backend/manage.py runserver 127.0.0.1:8000 || python backend/manage.py runserver 127.0.0.1:8000 || (echo Error: Python is not installed. Please install Python. && exit 1)",
-    "test": "pnpm --dir frontend test"
+    "test": "pnpm --dir frontend test",
+    "test:backend": "cd backend && (../.venv/bin/python manage.py test customer || ..\\\\.venv\\\\Scripts\\\\python manage.py test customer || ../.venv/Scripts/python manage.py test customer || python manage.py test customer)"
   },
   "dependencies": {
     "recharts": "^3.8.1"
