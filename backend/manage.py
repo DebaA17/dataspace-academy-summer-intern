@@ -8,7 +8,7 @@ def main():
     """Run administrative tasks."""
     import os
     import sys
-    import subprocess
+    import subprocess  # nosec B404
     from pathlib import Path
 
     in_venv = sys.prefix != sys.base_prefix
@@ -23,7 +23,7 @@ def main():
             
             if not venv_dir:
                 print("Virtual environment not found. Creating .venv...")
-                subprocess.check_call([sys.executable, '-m', 'venv', str(root_dir / '.venv')])
+                subprocess.check_call([sys.executable, '-m', 'venv', str(root_dir / '.venv')])  # nosec B603
                 venv_dir = root_dir / '.venv'
             
             is_win = sys.platform == 'win32'
@@ -31,12 +31,12 @@ def main():
             
             requirements_file = str(root_dir / 'requirements.txt')
             try:
-                subprocess.check_call([venv_python, '-c', 'import django, rest_framework, pandas, sklearn, xgboost'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.check_call([venv_python, '-c', 'import django, rest_framework, pandas, sklearn, xgboost'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # nosec B603
             except subprocess.CalledProcessError:
                 print("Installing dependencies from requirements.txt...")
-                subprocess.check_call([venv_python, '-m', 'pip', 'install', '-r', requirements_file])
+                subprocess.check_call([venv_python, '-m', 'pip', 'install', '-r', requirements_file])  # nosec B603
             
-            sys.exit(subprocess.call([venv_python] + sys.argv))
+            sys.exit(subprocess.call([venv_python] + sys.argv))  # nosec B603
         except KeyboardInterrupt:
             sys.exit(0)
 

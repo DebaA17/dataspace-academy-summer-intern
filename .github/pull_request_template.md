@@ -16,7 +16,7 @@ Tick the option(s) that apply (or check them directly in the GitHub UI after ope
 ## How Has This Been Tested?
 Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce.
 
-- [ ] **Backend Tests:** Run `pnpm --dir backend test` (or describe manual API verification)
+- [ ] **Backend Tests:** Run `pnpm test:backend` (or describe manual API verification)
 - [ ] **Frontend Tests:** Run `pnpm test` in the frontend directory
 
 ## Checklist

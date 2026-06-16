@@ -15,7 +15,7 @@ from rest_framework.authtoken.models import Token
 
 class PredictClusterAPITests(APITestCase):
 	def setUp(self):
-		self.user = User.objects.create_user(username='testuser', password='testpassword')
+		self.user = User.objects.create_user(username='testuser', password='testpassword')  # nosec B106
 		self.token = Token.objects.create(user=self.user)
 		self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 

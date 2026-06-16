@@ -10,6 +10,20 @@ permissions:
   pull-requests: write
 
 jobs:
+  clear-labels:
+    name: Clear Labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Clear Pipeline Status Labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "pipeline-validation-passed" || true
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "pipeline-validation-failed" || true
+
   validate:
     name: Build, Test & Security Checks
     strategy:

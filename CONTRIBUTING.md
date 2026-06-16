@@ -101,7 +101,7 @@ You can run the frontend, backend, or both concurrently using our cross-platform
 
 1. **Lint and Test:** Before opening a PR, ensure all local tests pass:
    * Frontend tests: `pnpm test`
-   * Backend tests: `python backend/manage.py test customer`
+   * Backend tests: `pnpm test:backend`
 2. **Push Changes:** Push your branch to the remote repository.
 3. **Open PR:** Open a Pull Request from your branch to `main`.
 4. **Follow Template:** Fill out the provided **Pull Request Template** completely.
