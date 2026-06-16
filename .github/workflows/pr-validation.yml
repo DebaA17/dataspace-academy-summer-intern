@@ -92,8 +92,10 @@ jobs:
           node-version: "22"
           cache: pnpm
 
-      - name: Install root dependencies
-        run: pnpm install
+      - name: Install dependencies
+        run: |
+          pnpm install
+          pnpm --dir frontend install
 
       - name: Test pnpm start Bootstrapper
         shell: bash
