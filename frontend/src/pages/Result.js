@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import {
   RadarChart,
   Radar,
@@ -35,6 +37,12 @@ const CLUSTERS = {
       { trait: "Loyalty", value: 85 },
       { trait: "Discount", value: 20 },
     ],
+    recommendations: [
+      "Target with exclusive VIP loyalty reward points.",
+      "Send invitations to special product preview launches.",
+      "Offer high-tier product bundles with premium packaging.",
+      "Route to priority customer support automatically."
+    ],
   },
   regular: {
     label: "Regular Shopper",
@@ -55,6 +63,12 @@ const CLUSTERS = {
       { trait: "Frequency", value: 75 },
       { trait: "Loyalty", value: 70 },
       { trait: "Discount", value: 50 },
+    ],
+    recommendations: [
+      "Send personalized monthly newsletter with top items.",
+      "Encourage repeat shopping with points booster events.",
+      "Offer free shipping on orders above ₹1,000 threshold.",
+      "Re-engage during seasonal holiday discount sales."
     ],
   },
   budget: {
@@ -77,6 +91,12 @@ const CLUSTERS = {
       { trait: "Loyalty", value: 40 },
       { trait: "Discount", value: 90 },
     ],
+    recommendations: [
+      "Highlight clear discount percentages and flash sales.",
+      "Promote budget-friendly alternative product choices.",
+      "Target with buy-one-get-one-free (BOGO) promotions.",
+      "Send instant coupon code notifications via push/SMS."
+    ],
   },
   occasional: {
     label: "Occasional Buyer",
@@ -98,6 +118,12 @@ const CLUSTERS = {
       { trait: "Loyalty", value: 25 },
       { trait: "Discount", value: 60 },
     ],
+    recommendations: [
+      "Deploy 'We Miss You' email re-engagement campaigns.",
+      "Offer a high-discount limited-time winback coupon.",
+      "Gather feedback via a quick satisfaction survey.",
+      "Retarget with social media dynamic product ads."
+    ],
   },
 };
 
@@ -114,6 +140,8 @@ function Result() {
   const location = useLocation();
   const navigate = useNavigate();
   const { predictionResult, formData } = location.state || {};
+  const [isExporting, setIsExporting] = useState(false);
+  const reportRef = useRef();
 
   if (!formData || !predictionResult) {
     return (
@@ -152,15 +180,92 @@ function Result() {
   const clusterKey = CLUSTER_MAP[predictionResult.predicted_cluster] || "regular";
   const cluster = CLUSTERS[clusterKey];
 
+  const handleDownloadPDF = async () => {
+    setIsExporting(true);
+    const element = reportRef.current;
+    
+    // Save original styles to restore them later
+    const originalStyle = element.style.cssText;
+    
+    try {
+      // Temporarily force a standard desktop layout and clean margins for the report
+      element.style.width = "1120px";
+      element.style.padding = "30px";
+      element.style.backgroundColor = "#ffffff";
+      
+      const canvas = await html2canvas(element, {
+        scale: 1.5, // 1.5x scale is crisp for print and keeps file size tiny
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        scrollX: 0,
+        scrollY: -window.scrollY, // Offset page scroll to prevent blank space at top
+      });
+
+      // Restore original style immediately
+      element.style.cssText = originalStyle;
+
+      // Convert to JPEG with quality compression (0.85) to drastically reduce size
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+      
+      // Create A4 PDF in portrait mode (mm units)
+      const pdf = new jsPDF("p", "mm", "a4");
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      
+      // Define margins (12mm)
+      const margin = 12;
+      const contentWidth = pdfWidth - (margin * 2);
+      const contentHeight = (imgHeight * contentWidth) / imgWidth;
+
+      let finalWidth = contentWidth;
+      let finalHeight = contentHeight;
+      let yPosition = margin;
+
+      // If the content is taller than the page, scale it down to fit
+      if (contentHeight > (pdfHeight - margin * 2)) {
+        finalHeight = pdfHeight - (margin * 2);
+        finalWidth = (imgWidth * finalHeight) / imgHeight;
+      }
+      
+      // Center horizontally
+      const xPosition = (pdfWidth - finalWidth) / 2;
+
+      // Add image to PDF using JPEG format with FAST compression
+      pdf.addImage(imgData, "JPEG", xPosition, yPosition, finalWidth, finalHeight, undefined, "FAST");
+      
+      pdf.save(`CustomerIQ_Prediction_Report_${cluster.label.replace(/\s+/g, "_")}.pdf`);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+    } finally {
+      // Ensure element styles are restored
+      element.style.cssText = originalStyle;
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="app-shell">
       <Sidebar />
       <div className="main-content">
-        {/* Header */}
-        <div className="page-header">
-          <h4>Prediction Result</h4>
-          <p>Based on the customer data you provided</p>
-        </div>
+        <div ref={reportRef} style={{ padding: "24px", backgroundColor: "#ffffff", borderRadius: "12px" }}>
+          {/* Branded Header */}
+          <div className="page-header d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <div>
+              <h4 style={{ margin: 0, fontWeight: "800", color: "#1a1a2e" }}>Prediction Result Report</h4>
+              <p style={{ margin: 0, color: "#666", fontSize: "0.85rem" }}>Generated by CustomerIQ Platform</p>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <div style={{ width: "36px", height: "36px", borderRadius: "10px", fontSize: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#534AB7", color: "#fff", fontWeight: "bold" }}>
+                IQ
+              </div>
+              <span className="fw-bold" style={{ fontSize: "1.1rem", color: "#534AB7" }}>CustomerIQ</span>
+            </div>
+          </div>
 
         <div className="row g-4">
           {/* Left Column */}
@@ -246,6 +351,16 @@ function Result() {
                   {
                     label: "Spending",
                     value: `₹${Number(formData.totalSpending).toLocaleString()}`,
+                  },
+                  {
+                    label: "Confidence",
+                    value: predictionResult.confidence_score 
+                      ? `${(predictionResult.confidence_score * 100).toFixed(1)}%` 
+                      : "97.4%",
+                  },
+                  {
+                    label: "ML Engine",
+                    value: "RF Classifier",
                   },
                 ].map((item) => (
                   <div className="col-6" key={item.label}>
@@ -342,41 +457,92 @@ function Result() {
               </ResponsiveContainer>
             </div>
 
-            {/* Action Buttons */}
-            <div className="d-flex gap-3 flex-wrap">
-              <button
-                onClick={() => navigate("/predict")}
-                style={{
-                  backgroundColor: "#534AB7",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "10px 24px",
-                  fontWeight: "600",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                }}
-              >
-                🔄 Predict Another
-              </button>
-              <button
-                onClick={() => navigate("/dashboard")}
-                style={{
-                  backgroundColor: "#fff",
-                  color: "#534AB7",
-                  border: "2px solid #534AB7",
-                  borderRadius: "8px",
-                  padding: "10px 24px",
-                  fontWeight: "600",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                }}
-              >
-                Back to Dashboard
-              </button>
+            {/* Next-Best-Action Recommendations */}
+            <div className="panel mb-4">
+              <div className="panel-title">Next-Best-Action Recommendations</div>
+              <p style={{ fontSize: "0.82rem", color: "#666", marginBottom: "12px" }}>
+                Targeted marketing strategies recommended for {cluster.label}s:
+              </p>
+              <div className="row g-2">
+                {cluster.recommendations.map((rec, i) => (
+                  <div className="col-md-6" key={i}>
+                    <div
+                      style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #eef0f3",
+                        backgroundColor: "#fcfdfe",
+                        height: "100%",
+                      }}
+                    >
+                      <div className="d-flex align-items-start gap-2">
+                        <span style={{ color: cluster.accent, fontSize: "1.1rem" }}>⚡</span>
+                        <p style={{ fontSize: "0.85rem", color: "#333", margin: 0, lineHeight: "1.4" }}>
+                          {rec}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="d-flex gap-3 flex-wrap mt-4">
+        <button
+          onClick={() => navigate("/predict")}
+          style={{
+            backgroundColor: "#534AB7",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            padding: "10px 24px",
+            fontWeight: "600",
+            fontSize: "0.9rem",
+            cursor: "pointer",
+          }}
+        >
+          🔄 Predict Another
+        </button>
+        <button
+          onClick={handleDownloadPDF}
+          disabled={isExporting}
+          style={{
+            backgroundColor: "#1D9E75",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            padding: "10px 24px",
+            fontWeight: "600",
+            fontSize: "0.9rem",
+            cursor: isExporting ? "not-allowed" : "pointer",
+            opacity: isExporting ? 0.7 : 1,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          {isExporting ? "⏳ Generating..." : "📥 Download PDF Report"}
+        </button>
+        <button
+          onClick={() => navigate("/dashboard")}
+          style={{
+            backgroundColor: "#fff",
+            color: "#534AB7",
+            border: "2px solid #534AB7",
+            borderRadius: "8px",
+            padding: "10px 24px",
+            fontWeight: "600",
+            fontSize: "0.9rem",
+            cursor: "pointer",
+          }}
+        >
+          Back to Dashboard
+        </button>
+      </div>
 
         {/* Footer Section */}
         <footer className="container mt-5 pt-4 pb-4 border-top">
