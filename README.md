@@ -31,7 +31,7 @@
 ## 👥 Team Information
 
 - **Team Name**: Threat Hunters
-- **College**: B.P.Poddar Institute of Management & Technology
+- **College**: B.P. Poddar Institute of Management & Technology
 - **Department**: BCA
 - **Internship Program**: AI & ML Summer Internship
 - **Organization**: DataSpace Academy, Sector v, Kolkata
@@ -44,7 +44,7 @@
 | Name | Role | Contributions |
 |------|------|---------------|
 | **Ruchika Adak** | Data Engineer & Backend Developer | Data Engineering (EDA, Data Cleaning, Feature Engineering), Feature Engineering, Scaling, Encoding ,  Django REST API, Model Integration |
-| **Debasis Biswas** | DevOps & Backend Lead | Repository Management, CI/CD (GitHub Actions), Docker Configuration, Backend Integration, Testing, Pull Request Reviews |
+| **Debasis Biswas** | Project Lead, DevOps & Backend | Repository Management, CI/CD (GitHub Actions), Docker Configuration, Backend Integration, Testing, Pull Request Reviews |
 
 ---
 

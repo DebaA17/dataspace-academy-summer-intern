@@ -7,23 +7,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
-  clear-labels:
-    name: Clear Labels
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Clear Pipeline Status Labels
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "pipeline-validation-passed" || true
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "pipeline-validation-failed" || true
-
   validate:
     name: Build, Test & Security Checks
     strategy:
@@ -105,27 +90,6 @@ jobs:
           sleep 20
           kill $PID || (echo "pnpm start crashed or terminated prematurely!" && exit 1)
 
-  update-labels:
-    name: Update Labels
-    needs: validate
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Add Passed Label
-        if: ${{ needs.validate.result == 'success' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "pipeline-validation-passed" --remove-label "pipeline-validation-failed"
-
-      - name: Add Failed Label
-        if: ${{ needs.validate.result != 'success' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "pipeline-validation-failed" --remove-label "pipeline-validation-passed"
 
 
