@@ -28,11 +28,42 @@
 
 ---
 
-## 🛠️ Technology Stack
+## 👥 Team Information
 
-* **Frontend**: React 19, React Router, Bootstrap, Recharts, pnpm
-* **Backend**: Django 5.2, Django REST Framework, SQLite, CORS Headers
-* **Machine Learning**: Python 3.11+, pandas, numpy, scikit-learn, XGBoost
+- **Team Name**: Threat Hunters
+- **College**: B.P. Poddar Institute of Management & Technology
+- **Department**: BCA
+- **Internship Program**: AI & ML Summer Internship
+- **Organization**: DataSpace Academy, Sector v, Kolkata
+
+---
+
+
+## 🧑‍💻 Core Contributors
+
+| Name | Role | Contributions |
+|------|------|---------------|
+| **Ruchika Adak** | Data Engineer & Backend Developer | Data Engineering (EDA, Data Cleaning, Feature Engineering), Feature Engineering, Scaling, Encoding ,  Django REST API, Model Integration |
+| **Debasis Biswas** | Project Lead, DevOps & Backend | Repository Management, CI/CD (GitHub Actions), Docker Configuration, Backend Integration, Testing, Pull Request Reviews |
+
+---
+
+## 🤝 Contributors
+
+- **Sadikul Sekh** – Model Training (Random Forest, XGBoost), Hyperparameter Tuning
+- **Payel Hazra** – Frontend Development (React Dashboard, UI/UX)
+- **Rupsa Haldar** – Documentation & Presentation
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, React Router, Tailwind CSS,Bootstrap,Recharts,pnpm
+- **Backend**: Django5.2, Django REST Framework,CORS Headers
+- **ML**: XGBoost, Random Forest, Scikit-learn,numpy, pandas
+- **Database**: SQLite
+- **Containerization**: Docker
+- **CI/CD**: GitHub Actions
 
 ---
 
