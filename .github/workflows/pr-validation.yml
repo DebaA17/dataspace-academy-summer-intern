@@ -63,10 +63,11 @@ jobs:
         run: |
           pip-audit -r requirements.txt
 
-      - name: Build Docker Image
+      - name: Build Docker Images
         if: matrix.os == 'ubuntu-latest'
         run: |
-          docker build -t pr-validation-image .
+          docker build -t backend-validation-image .
+          docker build -t frontend-validation-image ./frontend
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

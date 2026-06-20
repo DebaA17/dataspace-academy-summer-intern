@@ -82,6 +82,17 @@ pnpm start
 ```
 *(Note: The backend bootstrapper will automatically check your Python environment, create a `.venv` if one is missing, install the required Python packages from `requirements.txt`, and boot the Django backend alongside the React frontend.)*
 
+### Docker Compose (Single-Command Orchestration)
+To spin up both services (React frontend at `http://localhost:3000` and Django backend at `http://localhost:8000`) instantly in a fully containerized environment without needing local toolchains:
+
+```bash
+docker compose up --build
+```
+
+This single command will:
+1. Build the backend image, automatically train the ML models (`customer_cluster_model.pkl`, `scaler.pkl`, etc.) inside the container, run database migrations, and launch the API server.
+2. Build the frontend image, resolve and install dependency packages cleanly, and start the React dev server.
+
 ### Running Servers Separately
 If you prefer to run the servers in separate terminals:
 * **Start Django Backend:**

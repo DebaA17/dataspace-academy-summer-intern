@@ -1,0 +1,42 @@
+services:
+  backend:
+    user: root
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - DEBUG=True
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 backend
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+    volumes:
+      - .:/app
+      - /app/.venv # Protect container's virtual environment from host OS conflicts
+      - /app/node_modules
+    command: >
+      sh -c "python ml/train.py &&
+             python backend/manage.py migrate --noinput &&
+             python backend/manage.py createsuperuser --noinput || true &&
+             python backend/manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+      - CHOKIDAR_USEPOLLING=true # Ensures React hot-reload works on Windows/macOS hosts
+      - CI=true
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Protect container's node_modules from host OS conflicts
+

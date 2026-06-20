@@ -38,7 +38,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest bandit pip-audit
 
       - name: Verify Django App
         run: |
@@ -47,4 +47,12 @@ jobs:
       - name: Run Tests
         run: |
           python -m pytest
+
+      - name: Security Scan (Bandit)
+        run: |
+          bandit -r backend ml
+
+      - name: Dependency Audit
+        run: |
+          pip-audit -r requirements.txt
 

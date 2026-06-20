@@ -4,6 +4,10 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Create a virtual environment and put it on PATH
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 # Create non-root user with no login shell
 RUN groupadd -r appgroup && \
     useradd -r -g appgroup -d /app -s /usr/sbin/nologin appuser
@@ -26,7 +30,7 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Django development server port
-EXPOSE 5000
+EXPOSE 8000
 
-CMD ["python", "backend/manage.py", "runserver", "0.0.0.0:5000"]
+CMD ["python", "backend/manage.py", "runserver", "0.0.0.0:8000"]
 
