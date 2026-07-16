@@ -28,7 +28,7 @@ importers:
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)
       '@testing-library/user-event':
         specifier: ^13.5.0
         version: 13.5.0(@testing-library/dom@10.4.1)
@@ -45,17 +45,17 @@ importers:
         specifier: ^19.2.6
         version: 19.2.6
       react-dom:
-        specifier: ^19.2.6
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.6)
       react-router-dom:
         specifier: ^6.30.1
-        version: 6.30.4(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 6.30.4(react-dom@19.2.7(react@19.2.6))(react@19.2.6)
       react-scripts:
         specifier: 5.0.1
         version: 5.0.1(@babel/plugin-syntax-flow@7.29.7(@babel/core@7.29.7))(@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@19.2.6)(type-fest@0.21.3)(typescript@4.9.5)
       recharts:
         specifier: ^3.8.1
-        version: 3.8.1(react-dom@19.2.6(react@19.2.6))(react-is@18.3.1)(react@19.2.6)(redux@5.0.1)
+        version: 3.8.1(react-dom@19.2.7(react@19.2.6))(react-is@18.3.1)(react@19.2.6)(redux@5.0.1)
       web-vitals:
         specifier: ^2.1.4
         version: 2.1.4
@@ -4585,10 +4585,10 @@ packages:
       typescript:
         optional: true
 
-  react-dom@19.2.6:
-    resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
+  react-dom@19.2.7:
+    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
     peerDependencies:
-      react: ^19.2.6
+      react: ^19.2.7
 
   react-error-overlay@6.1.0:
     resolution: {integrity: sha512-SN/U6Ytxf1QGkw/9ve5Y+NxBbZM6Ht95tuXNMKs8EJyFa/Vy/+Co3stop3KBHARfn/giv+Lj1uUnTfOJ3moFEQ==}
@@ -7163,12 +7163,12 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
       react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.6)
 
   '@testing-library/user-event@13.5.0(@testing-library/dom@10.4.1)':
     dependencies:
@@ -11113,7 +11113,7 @@ snapshots:
       - supports-color
       - vue-template-compiler
 
-  react-dom@19.2.6(react@19.2.6):
+  react-dom@19.2.7(react@19.2.6):
     dependencies:
       react: 19.2.6
       scheduler: 0.27.0
@@ -11136,11 +11136,11 @@ snapshots:
 
   react-refresh@0.11.0: {}
 
-  react-router-dom@6.30.4(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  react-router-dom@6.30.4(react-dom@19.2.7(react@19.2.6))(react@19.2.6):
     dependencies:
       '@remix-run/router': 1.23.3
       react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.6)
       react-router: 6.30.4(react@19.2.6)
 
   react-router@6.30.4(react@19.2.6):
@@ -11269,7 +11269,7 @@ snapshots:
     dependencies:
       picomatch: 2.3.2
 
-  recharts@3.8.1(react-dom@19.2.6(react@19.2.6))(react-is@18.3.1)(react@19.2.6)(redux@5.0.1):
+  recharts@3.8.1(react-dom@19.2.7(react@19.2.6))(react-is@18.3.1)(react@19.2.6)(redux@5.0.1):
     dependencies:
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       clsx: 2.1.1
@@ -11278,7 +11278,7 @@ snapshots:
       eventemitter3: 5.0.4
       immer: 10.2.0
       react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.6)
       react-is: 18.3.1
       react-redux: 9.3.0(react@19.2.6)(redux@5.0.1)
       reselect: 5.1.1
