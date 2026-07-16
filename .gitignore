@@ -24,6 +24,4 @@ Thumbs.db
 /node_modules/
 /frontend/node_modules/
 /frontend/.pnpm-store/
-
 db.sqlite3
-__init__.py
