@@ -46,3 +46,54 @@ class PredictClusterAPITests(APITestCase):
 		self.assertIn('predicted_cluster', response.data)
 		self.assertIn('cluster_description', response.data)
 		self.assertIn('confidence_score', response.data)
+
+
+class LoginAttemptSignalTests(TestCase):
+	def test_successful_login_logged(self):
+		from django.contrib.auth.signals import user_logged_in
+		from django.test import RequestFactory
+		from customer.models import LoginAttempt
+
+		factory = RequestFactory()
+		request = factory.post('/api/login/')
+		user = User.objects.create_user(username='signalsuccess', password='password123')  # nosec B106
+
+		user_logged_in.send(sender=user.__class__, request=request, user=user)
+
+		log = LoginAttempt.objects.filter(username='signalsuccess').first()
+		self.assertIsNotNone(log)
+		self.assertEqual(log.status, 'SUCCESS')
+		self.assertEqual(log.login_source, 'FRONTEND')
+
+	def test_failed_login_logged(self):
+		from django.contrib.auth.signals import user_login_failed
+		from django.test import RequestFactory
+		from customer.models import LoginAttempt
+
+		factory = RequestFactory()
+		request = factory.post('/api/login/')
+
+		user_login_failed.send(sender=None, credentials={'username': 'signalfailed'}, request=request)
+
+		log = LoginAttempt.objects.filter(username='signalfailed').first()
+		self.assertIsNotNone(log)
+		self.assertEqual(log.status, 'FAILED')
+		self.assertEqual(log.login_source, 'FRONTEND')
+
+	def test_backend_login_logged(self):
+		from django.contrib.auth.signals import user_logged_in
+		from django.test import RequestFactory
+		from customer.models import LoginAttempt
+
+		factory = RequestFactory()
+		request = factory.post('/admin/login/')
+		user = User.objects.create_user(username='admin_success', password='password123')  # nosec B106
+
+		user_logged_in.send(sender=user.__class__, request=request, user=user)
+
+		log = LoginAttempt.objects.filter(username='admin_success').first()
+		self.assertIsNotNone(log)
+		self.assertEqual(log.status, 'SUCCESS')
+		self.assertEqual(log.login_source, 'BACKEND')
+
+
