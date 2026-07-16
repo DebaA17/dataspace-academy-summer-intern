@@ -10,6 +10,6 @@
     "test:backend": "cd backend && (../.venv/bin/python manage.py test customer || ..\\\\.venv\\\\Scripts\\\\python manage.py test customer || ../.venv/Scripts/python manage.py test customer || python manage.py test customer)"
   },
   "dependencies": {
-    "recharts": "^3.8.1"
+    "recharts": "^3.9.2"
   }
 }
