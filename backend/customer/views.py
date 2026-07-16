@@ -291,6 +291,18 @@ class CustomObtainAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)  # type: ignore
+
+        # Explicitly log successful token login
+        from .models import LoginAttempt
+        from .signals import get_client_ip, get_user_agent
+        LoginAttempt.objects.create(
+            username=user.username,
+            ip_address=get_client_ip(request),
+            user_agent=get_user_agent(request),
+            status='SUCCESS',
+            login_source='FRONTEND'
+        )
+
         return Response({
             'token': token.key,
             'user_id': user.pk,
@@ -341,6 +353,18 @@ class RegisterView(APIView):
             )
 
             token, created = Token.objects.get_or_create(user=user)  # type: ignore
+
+            # Explicitly log successful registration login
+            from .models import LoginAttempt
+            from .signals import get_client_ip, get_user_agent
+            LoginAttempt.objects.create(
+                username=user.username,
+                ip_address=get_client_ip(request),
+                user_agent=get_user_agent(request),
+                status='SUCCESS',
+                login_source='FRONTEND'
+            )
+
             return Response(
                 {
                     "message": "User registered successfully.",
@@ -356,3 +380,4 @@ class RegisterView(APIView):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+

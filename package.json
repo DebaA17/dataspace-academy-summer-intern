@@ -1,7 +1,7 @@
 {
   "name": "dataspace-customer-categorization",
   "private": true,
-  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620",
+  "packageManager": "pnpm@11.13.1+sha512.b2fc7683b8a6525414e7d13e1ba28caaddde96bf66ec540bfaeb7e702b81f3e0be4d1f295edf7f9fe0396740a8dce4509c582ddf79891f4543fea32d37645f25",
   "scripts": {
     "start": "node -e \"const fs=require('fs'); const cp=require('child_process'); if(!fs.existsSync('frontend/node_modules/react-scripts')){ console.log('Frontend node_modules missing or incomplete. Installing dependencies...'); const pnpm=process.platform==='win32'?'pnpm.cmd':'pnpm'; cp.execSync(pnpm+' --dir frontend install', {stdio:'inherit'}); } const run=(args)=>process.platform==='win32'?cp.spawn('cmd.exe', ['/c', 'pnpm '+args.join(' ')], {stdio:'inherit'}):cp.spawn('pnpm', args, {stdio:'inherit', shell:true}); run(['run', 'start:backend']); run(['run', 'start:frontend']);\"",
     "start:frontend": "pnpm --dir frontend start",

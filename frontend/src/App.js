@@ -25,6 +25,20 @@ function ProtectedRoute({ children }) {
   return token ? children : <Navigate to="/login" replace />;
 }
 
+// Route guard to enforce admin authorization
+function AdminRoute({ children }) {
+  const token = localStorage.getItem("authToken");
+  const isStaff = localStorage.getItem("isStaff") === "true";
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!isStaff) {
+    return <Navigate to="/predict" replace />;
+  }
+  return children;
+}
+
 function App() {
   return (
     <Router>
@@ -38,11 +52,11 @@ function App() {
         <Route path="/terms" element={<TermsOfService />} />
 
         {/* Protected Admin routes */}
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
         <Route path="/predict" element={<ProtectedRoute><PredictionForm /></ProtectedRoute>} />
         <Route path="/result" element={<ProtectedRoute><Result /></ProtectedRoute>} />
-        <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
-        <Route path="/billing" element={<ProtectedRoute><BillingCounter /></ProtectedRoute>} />
+        <Route path="/customers" element={<AdminRoute><Customers /></AdminRoute>} />
+        <Route path="/billing" element={<AdminRoute><BillingCounter /></AdminRoute>} />
         
         {/* Wildcard 404 */}
         <Route path="*" element={<NotFound />} />
