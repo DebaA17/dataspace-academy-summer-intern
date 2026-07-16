@@ -6,14 +6,3 @@ updates:
     schedule:
       interval: "daily"
 
-  # Node root dependencies (package.json)
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-
-  # Node frontend dependencies (frontend/package.json)
-  - package-ecosystem: "npm"
-    directory: "/frontend"
-    schedule:
-      interval: "daily"
