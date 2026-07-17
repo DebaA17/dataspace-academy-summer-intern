@@ -8,7 +8,12 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Repository
@@ -22,7 +27,9 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
+          path: |
+            ~/.cache/pip
+            ~\AppData\Local\pip\Cache
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
@@ -48,3 +55,46 @@ jobs:
       - name: Dependency Audit
         run: |
           pip-audit -r requirements.txt
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Trigger and Monitor Render Deploy
+        run: |
+          # 1. Trigger the deploy hook and capture the response
+          response=$(curl -s -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}")
+          echo "Deploy triggered successfully!"
+          
+          # 2. Extract the deploy ID
+          deploy_id=$(echo "$response" | jq -r '.deploy.id')
+          echo "Deploy ID: $deploy_id"
+          
+          # 3. Check if we have credentials to monitor the status
+          if [ -z "${{ secrets.RENDER_API_KEY }}" ] || [ -z "${{ secrets.RENDER_SERVICE_ID }}" ]; then
+            echo "RENDER_API_KEY or RENDER_SERVICE_ID secrets are not set."
+            echo "Skipping real-time monitoring. Check your Render dashboard for build status."
+            exit 0
+          fi
+          
+          echo "Monitoring deployment status..."
+          while true; do
+            # Query the Render API for the deployment status
+            status_response=$(curl -s -f \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$deploy_id")
+            
+            status=$(echo "$status_response" | jq -r '.status')
+            echo "Current status: $status"
+            
+            if [ "$status" = "live" ]; then
+              echo "Deployment succeeded!"
+              exit 0
+            elif [ "$status" = "build_failed" ] || [ "$status" = "update_failed" ] || [ "$status" = "canceled" ]; then
+              echo "Deployment failed with status: $status"
+              exit 1
+            fi
+            
+            sleep 15
+          done
