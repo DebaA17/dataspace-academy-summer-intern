@@ -1,0 +1,41 @@
+name: Feature Request
+description: Propose a new idea or enhancement for CustomerIQ.
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! We love hearing ideas for improving CustomerIQ.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is.
+      placeholder: E.g., "I'm frustrated when..." or "It's hard to track..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the Solution You'd Like
+      description: A clear and concise description of what you want to happen.
+      placeholder: E.g., We should add an export button for customer segment data.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe Alternatives You've Considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+      placeholder: E.g., I tried copying the table manually, but it loses formatting.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context or mockups about the feature request here.
+      placeholder: E.g., Attach mockups, design ideas, or reference screenshots.
+    validations:
+      required: false
