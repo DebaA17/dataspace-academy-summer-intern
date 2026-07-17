@@ -20,7 +20,7 @@ body:
     attributes:
       label: Steps to Reproduce
       description: How did you encounter this bug? Please provide step-by-step instructions.
-      value: |
+      placeholder: |
         1. Start the server using `pnpm start`
         2. Go to '...'
         3. Click on '...'
@@ -39,7 +39,7 @@ body:
     attributes:
       label: Environment Details
       description: Please provide details about your development/runtime environment.
-      value: |
+      placeholder: |
         - **OS:** E.g., Windows 11, Ubuntu 24.04, macOS Sonoma
         - **Node.js Version:** E.g., v22.2.0
         - **Python Version:** E.g., v3.11.4
