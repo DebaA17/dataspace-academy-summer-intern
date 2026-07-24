@@ -59,7 +59,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository == 'DebaA17/dataspace-academy-summer-intern'
     steps:
       - name: Trigger and Monitor Render Deploy
         run: |
